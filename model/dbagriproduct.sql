@@ -41,7 +41,8 @@ CREATE TABLE `products` (
   `location` varchar(200) NOT NULL,
   `lat` varchar(50) NOT NULL,
   `lng` varchar(50) NOT NULL,
-  `status` varchar(50) NOT NULL
+  `status` varchar(50) NOT NULL,
+  `productUrl` varchar(500) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 ALTER TABLE `users`

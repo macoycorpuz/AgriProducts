@@ -14,37 +14,6 @@ $app = new \Slim\App([
 ]);
 
 
-//registering a new user
-$app->post('/register', function (Request $request, Response $response) {
-    if (isTheseParametersAvailable(array('name', 'email', 'password', 'number', 'address', 'isAdmin'))) {
-        $requestData = $request->getParsedBody();
-        $name = $requestData['name'];
-        $email = $requestData['email'];
-        $password = $requestData['password'];
-        $number = $requestData['number'];
-        $address = $requestData['address'];
-        $isAdmin = $requestData['isAdmin'];
-        $db = new DbOperation();
-        $responseData = array();
-
-        $result = $db->registerUser($name, $email, $password, $number, $address, $isAdmin);
-
-        if ($result == USER_CREATED) {
-            $responseData['error'] = false;
-            $responseData['message'] = 'Registered successfully';
-        } elseif ($result == USER_CREATION_FAILED) {
-            $responseData['error'] = true;
-            $responseData['message'] = 'Some error occurred';
-        } elseif ($result == USER_EXIST) {
-            $responseData['error'] = true;
-            $responseData['message'] = 'This email already exist, please login';
-        }
-
-        $response->getBody()->write(json_encode($responseData));
-    }
-});
-
-
 //user login route
 $app->post('/login', function (Request $request, Response $response) {
     if (isTheseParametersAvailable(array('email', 'password'))) {
@@ -58,7 +27,6 @@ $app->post('/login', function (Request $request, Response $response) {
 
         if ($db->userLogin($email, $password, $userId)) {
             $responseData['error'] = false;
-            // $responseData['user'] = $db->getUserByEmail($email);
             $responseData['user'] = $userId;
         } else {
             $responseData['error'] = true;
@@ -69,11 +37,34 @@ $app->post('/login', function (Request $request, Response $response) {
     }
 });
 
-//getting all users
-$app->get('/users', function (Request $request, Response $response) {
-    $db = new DbOperation();
-    $users = $db->getAllUsers();
-    $response->getBody()->write(json_encode(array("users" => $users)));
+//registering a new user
+$app->post('/register', function (Request $request, Response $response) {
+    if (isTheseParametersAvailable(array('name', 'email', 'password', 'number', 'address', 'url'))) {
+        $requestData = $request->getParsedBody();
+        $name = $requestData['name'];
+        $email = $requestData['email'];
+        $password = $requestData['password'];
+        $number = $requestData['number'];
+        $address = $requestData['address'];
+        $url = $requestData['url'];
+        $db = new DbOperation();
+        $responseData = array();
+
+        $result = $db->registerUser($name, $email, $password, $number, $address, $url);
+
+        if ($result == USER_CREATED) {
+            $responseData['error'] = false;
+            $responseData['message'] = 'Registered successfully';
+        } elseif ($result == USER_CREATION_FAILED) {
+            $responseData['error'] = true;
+            $responseData['message'] = 'Some error occurred';
+        } elseif ($result == USER_EXIST) {
+            $responseData['error'] = true;
+            $responseData['message'] = 'This email already exist.';
+        }
+
+        $response->getBody()->write(json_encode($responseData));
+    }
 });
 
 //getting all products
@@ -83,11 +74,64 @@ $app->get('/products', function (Request $request, Response $response) {
     $response->getBody()->write(json_encode(array("products" => $products)));
 });
 
-//getting messages for a user
-$app->get('/inbox/{id}', function (Request $request, Response $response) {
-    $userid = $request->getAttribute('id');
+//getting product by name
+$app->get('/products/{productName}', function (Request $request, Response $response) {
+    $productName = $request->getAttribute('productName');
     $db = new DbOperation();
-    $inbox = $db->getMessages($userid);
+    $product = $db->getProductbyName($productName);
+    $response->getBody()->write(json_encode(array("product" => $product)));
+});
+
+//getting product by id
+$app->get('/products/{productId}', function (Request $request, Response $response) {
+    $productId = $request->getAttribute('productId');
+    $db = new DbOperation();
+    $product = $db->getProductbyName($productId);
+    $response->getBody()->write(json_encode(array("product" => $product)));
+});
+
+//post product
+$app->post('/sellproduct', function (Request $request, Response $response) {
+    if (isTheseParametersAvailable(array('sellerId', 'productName', 'description', 'quantity', 'price', 'location', 'lat', 'lng', 'status', 'productUrl'))) {
+        $sellerId = $request->getParsedBody();
+        $productName = $requestData['productName'];
+        $description = $requestData['description'];
+        $quantity = $requestData['quantity'];
+        $price = $requestData['price'];
+        $location = $requestData['location'];
+        $lat = $requestData['lat'];
+        $lng = $requestData['lng'];
+        $status = $requestData['status'];
+        $productUrl = $requestData['productUrl'];
+        $db = new DbOperation();
+        $responseData = array();
+
+        $result = $db->postProduct($sellerId, $productName, $description, $quantity, $price, $location, $lat, $lng, $status, $productUrl);
+
+        if ($result == PRODUCT_CREATED) {
+            $responseData['error'] = false;
+            $responseData['message'] = 'Product has been posted';
+        } elseif ($result == PRODUCT_CREATION_FAILED) {
+            $responseData['error'] = true;
+            $responseData['message'] = 'Some error occurred';
+
+        $response->getBody()->write(json_encode($responseData));
+    }
+});
+
+//getting deals
+$app->get('/inbox/{userId}', function (Request $request, Response $response) {
+    $deals = $request->getAttribute('userId');
+    $db = new DbOperation();
+    $deals = $db->getDeals($userid);
+    $response->getBody()->write(json_encode(array("deals" => $deals)));
+});
+
+//getting messages for a deal
+$app->get('/messages/{dealId}', function (Request $request, Response $response) {
+    $dealId = $request->getAttribute('dealId');
+    $db = new DbOperation();
+    $inbox = $db->getMessages($dealId);
     $response->getBody()->write(json_encode(array("messages" => $inbox)));
 });
 
@@ -113,6 +157,15 @@ $app->post('/sendmessage', function (Request $request, Response $response) {
 
         $response->getBody()->write(json_encode($responseData));
     }
+});
+
+
+//ADMIN API
+//getting all users
+$app->get('/users', function (Request $request, Response $response) {
+    $db = new DbOperation();
+    $users = $db->getAllUsers();
+    $response->getBody()->write(json_encode(array("users" => $users)));
 });
 
 //function to check parameters

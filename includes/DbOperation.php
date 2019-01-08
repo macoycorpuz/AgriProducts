@@ -15,7 +15,7 @@ class DbOperation
     function userLogin($email, $pass, &$userId)
     {
         $password = md5($pass);
-        $stmt = $this->con->prepare("SELECT userId FROM users WHERE email = ? AND password = ?");
+        $stmt = $this->con->prepare("SELECT * FROM users WHERE email = ? AND password = ?");
         $stmt->bind_param("ss", $email, $password);
         $stmt->execute();
         $stmt->store_result();
@@ -39,7 +39,7 @@ class DbOperation
     //Method to get all products
     function getAllProducts()
     {
-        $sql = "SELECT * FROM products AS p INNER JOIN user AS u ON p.SellerID = u.UserID ORDER BY ProductID DESC";
+        $sql = "SELECT p.*, u.name FROM products AS p INNER JOIN users AS u ON p.sellerId = u.userId ORDER BY p.productId DESC";
         $stmt = $this->con->prepare($sql);
         $stmt->execute();
         $products = array();
@@ -52,7 +52,7 @@ class DbOperation
     //Method to get product by name
     function getProductbyName($productName)
     {
-        $sql = "SELECT * FROM products AS p INNER JOIN user AS u ON p.SellerID = u.UserID WHERE productName LIKE '%$productName%'";
+        $sql = "SELECT p.*, u.name FROM products AS p INNER JOIN users AS u ON p.sellerId = u.userId WHERE productName LIKE '%$productName%'";
         $stmt = $this->con->prepare($sql);
         $stmt->execute();
         $product = array();
@@ -65,7 +65,7 @@ class DbOperation
     //Method to get all products
     function getProductbyId($productId)
     {
-        $sql = "SELECT * FROM products AS p INNER JOIN user AS u ON p.SellerID = u.UserID WHERE productId = $productId";
+        $sql = "SELECT p.*, u.name FROM products AS p INNER JOIN users AS u ON p.sellerId = u.userId WHERE productId = $productId";
         $stmt = $this->con->prepare($sql);
         $stmt->execute();
         $product = array();

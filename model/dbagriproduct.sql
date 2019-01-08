@@ -74,3 +74,4 @@ ALTER TABLE `messages`
 ALTER TABLE `products`
   MODIFY `productId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
+INSERT INTO admin (name, email, password) VALUES ('admin', 'admin', 'admin')

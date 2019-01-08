@@ -5,7 +5,15 @@ CREATE TABLE `users` (
   `password` varchar(50) NOT NULL,
   `number` varchar(11) NOT NULL,
   `address` varchar(200) NOT NULL,
-  `isAdmin` bit DEFAULT b'0'
+  `url` varchar(500) NOT NULL,
+  `isActivated` bit DEFAULT b'0'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE `admin` (
+  `adminId` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `password` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 CREATE TABLE `deals` (
@@ -39,6 +47,10 @@ CREATE TABLE `products` (
 ALTER TABLE `users`
   ADD PRIMARY KEY (`userId`),
   ADD UNIQUE KEY `UQ_Email` (`email`);
+
+ALTER TABLE `admin`
+  ADD PRIMARY KEY (`adminId`),
+  ADD UNIQUE KEY `UQ_ADMINEMAIL` (`email`);
 
 ALTER TABLE `deals`   
   ADD PRIMARY KEY (`dealId`);

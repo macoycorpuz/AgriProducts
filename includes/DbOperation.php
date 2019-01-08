@@ -12,13 +12,14 @@ class DbOperation
     }
 
     //Method for user login
-    function userLogin($email, $pass, &$userId)
+    function userLogin($email, $pass, &$user)
     {
         $password = md5($pass);
-        $stmt = $this->con->prepare("SELECT * FROM users WHERE email = ? AND password = ?");
-        $stmt->bind_param("ss", $email, $password);
-        $stmt->execute();
-        $stmt->store_result();
+        $stmt = $this->con->query("SELECT * FROM users WHERE email = '$email' AND password = '$password'");
+        $user = array();
+        while($row = $stmt->fetch_assoc()){
+            array_push($user, $row);
+        }
         return $stmt->num_rows > 0;
     }
 
@@ -40,8 +41,7 @@ class DbOperation
     function getAllProducts()
     {
         $sql = "SELECT p.*, u.name FROM products AS p INNER JOIN users AS u ON p.sellerId = u.userId ORDER BY p.productId DESC";
-        $stmt = $this->con->prepare($sql);
-        $stmt->execute();
+        $stmt = $this->con->query($sql);
         $products = array();
         while($row = $stmt->fetch_assoc()){
             array_push($products, $row);
@@ -158,8 +158,7 @@ class DbOperation
     //Method to check if email already exist
     function isUserExist($email)
     {
-        $stmt = $this->con->query("SELECT COUNT(*) as 'count' FROM (SELECT email FROM users UNION SELECT email FROM admin) a WHERE email = '$email'") or die($this->con->error);
-        $row = $stmt->fetch_assoc($stmt);
-        return $row['count'] > 0;
+        $stmt = $this->con->query("SELECT * FROM (SELECT email FROM users UNION SELECT email FROM admin) a WHERE email = '$email'") or die($this->con->error);
+        return $stmt->num_rows > 0;
     }
 }

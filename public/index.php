@@ -25,9 +25,9 @@ $app->post('/login', function (Request $request, Response $response) {
 
         $responseData = array();
 
-        if ($db->userLogin($email, $password, $userId)) {
+        if ($db->userLogin($email, $password, $user)) {
             $responseData['error'] = false;
-            $responseData['user'] = $userId;
+            $responseData['user'] = $user;
         } else {
             $responseData['error'] = true;
             $responseData['message'] = 'Invalid email or password';

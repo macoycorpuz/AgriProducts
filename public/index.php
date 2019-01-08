@@ -75,7 +75,7 @@ $app->get('/products', function (Request $request, Response $response) {
 });
 
 //getting product by name
-$app->get('/products/{productName}', function (Request $request, Response $response) {
+$app->get('/productName/{productName}', function (Request $request, Response $response) {
     $productName = $request->getAttribute('productName');
     $db = new DbOperation();
     $product = $db->getProductbyName($productName);
@@ -83,7 +83,7 @@ $app->get('/products/{productName}', function (Request $request, Response $respo
 });
 
 //getting product by id
-$app->get('/products/{productId}', function (Request $request, Response $response) {
+$app->get('/productId/{productId}', function (Request $request, Response $response) {
     $productId = $request->getAttribute('productId');
     $db = new DbOperation();
     $product = $db->getProductbyId($productId);
@@ -113,6 +113,7 @@ $app->post('/sellproduct', function (Request $request, Response $response) {
         } elseif ($result == PRODUCT_CREATION_FAILED) {
             $responseData['error'] = true;
             $responseData['message'] = 'Some error occurred';
+        }
 
         $response->getBody()->write(json_encode($responseData));
     }

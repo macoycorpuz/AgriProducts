@@ -86,13 +86,13 @@ $app->get('/products/{productName}', function (Request $request, Response $respo
 $app->get('/products/{productId}', function (Request $request, Response $response) {
     $productId = $request->getAttribute('productId');
     $db = new DbOperation();
-    $product = $db->getProductbyName($productId);
+    $product = $db->getProductbyId($productId);
     $response->getBody()->write(json_encode(array("product" => $product)));
 });
 
 //post product
 $app->post('/sellproduct', function (Request $request, Response $response) {
-    if (isTheseParametersAvailable(array('sellerId', 'productName', 'description', 'quantity', 'price', 'location', 'lat', 'lng', 'status', 'productUrl'))) {
+    if (isTheseParametersAvailable(array('sellerId', 'productName', 'description', 'quantity', 'price', 'location', 'lat', 'lng', 'productUrl'))) {
         $sellerId = $request->getParsedBody();
         $productName = $requestData['productName'];
         $description = $requestData['description'];
@@ -101,12 +101,11 @@ $app->post('/sellproduct', function (Request $request, Response $response) {
         $location = $requestData['location'];
         $lat = $requestData['lat'];
         $lng = $requestData['lng'];
-        $status = $requestData['status'];
         $productUrl = $requestData['productUrl'];
         $db = new DbOperation();
         $responseData = array();
 
-        $result = $db->postProduct($sellerId, $productName, $description, $quantity, $price, $location, $lat, $lng, $status, $productUrl);
+        $result = $db->postProduct($sellerId, $productName, $description, $quantity, $price, $location, $lat, $lng, $productUrl);
 
         if ($result == PRODUCT_CREATED) {
             $responseData['error'] = false;
@@ -128,10 +127,11 @@ $app->get('/inbox/{userId}', function (Request $request, Response $response) {
 });
 
 //getting messages for a deal
-$app->get('/messages/{dealId}', function (Request $request, Response $response) {
+$app->get('/messages/{dealId}/{userId}', function (Request $request, Response $response) {
     $dealId = $request->getAttribute('dealId');
+    $userId = $request->getAttribute('userId');
     $db = new DbOperation();
-    $inbox = $db->getMessages($dealId);
+    $inbox = $db->getMessages($dealId, $userId);
     $response->getBody()->write(json_encode(array("messages" => $inbox)));
 });
 
@@ -158,7 +158,6 @@ $app->post('/sendmessage', function (Request $request, Response $response) {
         $response->getBody()->write(json_encode($responseData));
     }
 });
-
 
 //ADMIN API
 //getting all users

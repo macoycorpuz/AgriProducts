@@ -11,20 +11,6 @@ class DbOperation
         $this->con = $db->connect();
     }
 
-    //Method to create a new user
-    function registerUser($name, $email, $pass, $number, $address, $isAdmin)
-    {
-        if (!$this->isUserExist($email)) {
-            $password = md5($pass);
-            $stmt = $this->con->prepare("INSERT INTO users (name, email, password, number, address, isAdmin) VALUES (?, ?, ?, ?, ?, ?)");
-            $stmt->bind_param("sssssb", $name, $email, $password, $number, $address, $isAdmin);
-            if ($stmt->execute())
-                return USER_CREATED;
-            return USER_CREATION_FAILED;
-        }
-        return USER_EXIST;
-    }
-
     //Method for user login
     function userLogin($email, $pass, &$userId)
     {
@@ -36,52 +22,73 @@ class DbOperation
         return $stmt->num_rows > 0;
     }
 
-    //Method to send a deal
-    function sendDeal($productId, $userId)
+    //Method to create a new user
+    function registerUser($name, $email, $pass, $number, $address, $url)
     {
-        $stmt = $this->con->prepare("INSERT INTO deals (productId, userId,time) VALUES (?, ?, NOW());");
-        $stmt->bind_param("ii", $dealId, $userId);
-        if ($stmt->execute())
-            return true;
-        return false;
+        if (!$this->isUserExist($email)) {
+            $password = md5($pass);
+            $stmt = $this->con->prepare("INSERT INTO users (name, email, password, number, address, url) VALUES (?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("ssssss", $name, $email, $password, $number, $address, $url);
+            if ($stmt->execute())
+                return USER_CREATED;
+            return USER_CREATION_FAILED;
+        }
+        return USER_EXIST;
     }
 
-    //Method to send a message to another user
-    function sendMessage($dealId, $userId, $content)
+    //Method to get all products
+    function getAllProducts()
     {
-        $stmt = $this->con->prepare("INSERT INTO messages (dealId, userId, content, time) VALUES (?, ?, ?, NOW());");
-        $stmt->bind_param("iis", $dealId, $userId, $content);
-        if ($stmt->execute())
-            return true;
-        return false;
+        $sql = "SELECT * FROM products AS p INNER JOIN user AS u ON p.SellerID = u.UserID ORDER BY ProductID DESC";
+        $stmt = $this->con->prepare($sql);
+        $stmt->execute();
+        $products = array();
+        while($row = $stmt->fetch_assoc()){
+            array_push($products, $row);
+        }
+        return $products;
+    }
+
+    //Method to get product by name
+    function getProductbyName($productName)
+    {
+        $sql = "SELECT * FROM products AS p INNER JOIN user AS u ON p.SellerID = u.UserID WHERE productName LIKE '%$productName%'";
+        $stmt = $this->con->prepare($sql);
+        $stmt->execute();
+        $product = array();
+        while($row = $stmt->fetch_assoc()){
+            array_push($product, $row);
+        }
+        return $product;
+    }
+
+    //Method to get all products
+    function getProductbyId($productId)
+    {
+        $sql = "SELECT * FROM products AS p INNER JOIN user AS u ON p.SellerID = u.UserID WHERE productId = $productId";
+        $stmt = $this->con->prepare($sql);
+        $stmt->execute();
+        $product = array();
+        while($row = $stmt->fetch_assoc()){
+            array_push($product, $row);
+        }
+        return $product;
     }
 
     //Method to post a product
-    function postProduct($sellerId, $prodName, $desc, $quantity, $price, $location, $lat, $lng)
+    function postProduct($sellerId, $prodName, $desc, $quantity, $price, $location, $lat, $lng, $status, $prodUrl)
     {
         $password = md5($pass);
-        $stmt = $this->con->prepare("INSERT INTO products (sellerId, productName, description, quantity, price, location, lat, lng, status)
-        VALUES (?, ?, ?, ?, ?,  ?, ?, ?, 'Available')");
-        $stmt->bind_param("iissidsss", $sellerId, $prodName, $desc, $quantity, $price, $location, $lat, $lng);
+        $stmt = $this->con->prepare("INSERT INTO products (sellerId, productName, description, quantity, price, location, lat, lng, status, productUrl)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("issidsssss", $sellerId, $prodName, $desc, $quantity, $price, $location, $lat, $lng, 'Available', $prodUrl);
         if ($stmt->execute())
-            return true;
-        return false;
-    }
-
-
-    //Method to update profile of user
-    function updateProfile($id, $name, $email, $pass, $gender)
-    {
-        $password = md5($pass);
-        $stmt = $this->con->prepare("UPDATE users SET name = ?, email = ?, password = ?, gender = ? WHERE userId = ?");
-        $stmt->bind_param("ssssi", $name, $email, $password, $gender, $id);
-        if ($stmt->execute())
-            return true;
-        return false;
+            return PRODUCT_CREATED;
+        return PRODUCT_CREATION_FAILED;
     }
 
     //Method to get inbox of a particular user
-    function getInbox($userid)
+    function getDeals($userid)
     {
         $sql = "SELECT * FROM deals AS d
         INNER JOIN products AS p ON d.productId = p.productId
@@ -98,7 +105,7 @@ class DbOperation
         return $inbox;
     }
 
-    //Method to get messages of a particular user
+    //Method to get messages of a particular deal
     function getMessages($dealId, $userId)
     {
         $sql = "SELECT * FROM messages AS m
@@ -116,6 +123,26 @@ class DbOperation
         return $messages;
     }
 
+    //Method to send a deal
+    function sendDeal($productId, $userId)
+    {
+        $stmt = $this->con->prepare("INSERT INTO deals (productId, userId, time) VALUES (?, ?, NOW());");
+        $stmt->bind_param("ii", $dealId, $userId);
+        if ($stmt->execute())
+            return true;
+        return false;
+    }
+
+    //Method to send a message to another user
+    function sendMessage($dealId, $userId, $content)
+    {
+        $stmt = $this->con->prepare("INSERT INTO messages (dealId, userId, content, time) VALUES (?, ?, ?, NOW());");
+        $stmt->bind_param("iis", $dealId, $userId, $content);
+        if ($stmt->execute())
+            return true;
+        return false;
+    }
+
     //Method to get all users
     function getAllUsers()
     {
@@ -126,21 +153,6 @@ class DbOperation
             array_push($users, $row);
         }
         return $users;
-    }
-
-    //Method to get all products
-    function getAllProducts()
-    {
-        $sql = "SELECT * FROM products AS p
-        INNER JOIN user AS u ON p.SellerID = u.UserID 
-        ORDER BY ProductID DESC";
-        $stmt = $this->con->prepare($sql);
-        $stmt->execute();
-        $products = array();
-        while($row = $stmt->fetch_assoc()){
-            array_push($products, $row);
-        }
-        return $products;
     }
 
     //Method to check if email already exist

@@ -158,10 +158,8 @@ class DbOperation
     //Method to check if email already exist
     function isUserExist($email)
     {
-        $stmt = $this->con->prepare("SELECT userId FROM users WHERE email = ?");
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $stmt->store_result();
-        return $stmt->num_rows > 0;
+        $stmt = $this->con->query("SELECT COUNT(*) as 'count' FROM (SELECT email FROM users UNION SELECT email FROM admin) a WHERE email = '$email'") or die($this->con->error);
+        $row = $stmt->fetch_assoc($stmt);
+        return $row['count'] > 0;
     }
 }

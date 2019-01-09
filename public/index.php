@@ -2,6 +2,7 @@
 
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
+use \Slim\Http\UploadedFile;
 
 require '../vendor/autoload.php';
 require_once '../includes/DbOperation.php';
@@ -13,6 +14,21 @@ $app = new \Slim\App([
     ]
 ]);
 
+$container = $app->getContainer();
+$container['images'] = __DIR__ . '/images';
+
+$app->post('/upload', function(Request $request, Response $response) {
+    $directory = $this->get('upload_directory');
+
+    $uploadedFiles = $request->getUploadedFiles();
+
+    // handle single input with single file upload
+    $uploadedFile = $uploadedFiles['example1'];
+    if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
+        $filename = moveUploadedFile($directory, $uploadedFile);
+        $response->getBody()->write(json_encode($responseData));
+    }
+});
 
 //user login route
 $app->post('/login', function (Request $request, Response $response) {
@@ -192,5 +208,15 @@ function isTheseParametersAvailable($required_fields)
     return true;
 }
 
+function moveUploadedFile($directory, UploadedFile $uploadedFile)
+{
+    $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
+    $basename = bin2hex(random_bytes(8)); // see http://php.net/manual/en/function.random-bytes.php
+    $filename = sprintf('%s.%0.8s', $basename, $extension);
+
+    $uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename);
+
+    return $filename;
+}
 
 $app->run();

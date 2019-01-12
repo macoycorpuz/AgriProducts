@@ -1,0 +1,9 @@
+GET http://localhost/AgriProducts/public/users
+
+##
+
+POST http://localhost/AgriProducts/public/login
+Content-Type: application/x-www-form-urlencoded
+
+email=foo
+&password=bar

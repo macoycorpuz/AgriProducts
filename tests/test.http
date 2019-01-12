@@ -1,9 +1,17 @@
-GET http://localhost/AgriProducts/public/users
-
-##
-
-POST http://localhost/AgriProducts/public/login
+POST http://localhost/api-agriproducts/public/login
 Content-Type: application/x-www-form-urlencoded
 
-email=foo
-&password=bar
+email=aa
+&password=aa
+###
+POST http://localhost/api-agriproducts/public/register
+Content-Type: application/x-www-form-urlencoded
+
+email=aa
+&password=aa
+&number=aa
+&address=aa
+&url=aa
+###
+GET http://localhost/api-agriproducts/public/users
+###

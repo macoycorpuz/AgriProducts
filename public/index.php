@@ -15,20 +15,8 @@ $app = new \Slim\App([
 ]);
 
 $container = $app->getContainer();
-$container['images'] = __DIR__ . '/images';
-
-$app->post('/upload', function(Request $request, Response $response) {
-    $directory = $this->get('upload_directory');
-
-    $uploadedFiles = $request->getUploadedFiles();
-
-    // handle single input with single file upload
-    $uploadedFile = $uploadedFiles['example1'];
-    if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
-        $filename = moveUploadedFile($directory, $uploadedFile);
-        $response->getBody()->write(json_encode($responseData));
-    }
-});
+$container['users_directory'] = __DIR__ . '/../images/users';
+$container['products_directory'] = __DIR__ . '/../images/products';
 
 //user login route
 $app->post('/login', function (Request $request, Response $response) {
@@ -55,31 +43,40 @@ $app->post('/login', function (Request $request, Response $response) {
 
 //registering a new user
 $app->post('/register', function (Request $request, Response $response) {
-    if (isTheseParametersAvailable(array('name', 'email', 'password', 'number', 'address', 'url'))) {
+    if (isTheseParametersAvailable(array('name', 'email', 'password', 'number', 'address'))) {
         $requestData = $request->getParsedBody();
+        $uploadedFiles = $request->getUploadedFiles();
         $name = $requestData['name'];
         $email = $requestData['email'];
         $password = $requestData['password'];
         $number = $requestData['number'];
         $address = $requestData['address'];
-        $url = $requestData['url'];
+        $userImage = $uploadedFiles['userImage'];
         $db = new DbOperation();
         $responseData = array();
 
-        $result = $db->registerUser($name, $email, $password, $number, $address, $url);
+        if ($userImage->getError() === UPLOAD_ERR_OK) {
+            $directory = $this->get('users_directory');
+            $userFile = getFileName($userImage);
+            $result = $db->registerUser($name, $email, $password, $number, $address, $userFile);
 
-        if ($result == USER_CREATED) {
-            $responseData['error'] = false;
-            $responseData['message'] = 'Registered successfully';
-        } elseif ($result == USER_CREATION_FAILED) {
+            if ($result == USER_CREATED) {
+                moveUploadedFile($directory, $userFile, $userImage);
+                $responseData['error'] = false;
+                $responseData['message'] = 'Registered successfully';
+            } elseif ($result == USER_CREATION_FAILED) {
+                $responseData['error'] = true;
+                $responseData['message'] = 'Unable to register user';
+            } elseif ($result == USER_EXIST) {
+                $responseData['error'] = true;
+                $responseData['message'] = 'This email already exist';
+            }            
+        } else {
             $responseData['error'] = true;
-            $responseData['message'] = 'Some error occurred';
-        } elseif ($result == USER_EXIST) {
-            $responseData['error'] = true;
-            $responseData['message'] = 'This email already exist.';
+            $responseData['message'] = 'Image upload error';
         }
 
-        $response->getBody()->write(json_encode($responseData));
+        $response->getBody()->write(json_encode($responseData));   
     }
 });
 
@@ -91,25 +88,19 @@ $app->get('/products', function (Request $request, Response $response) {
 });
 
 //getting product by name
-$app->get('/productName/{productName}', function (Request $request, Response $response) {
+$app->get('/productname/{productName}', function (Request $request, Response $response) {
     $productName = $request->getAttribute('productName');
     $db = new DbOperation();
-    $product = $db->getProductbyName($productName);
-    $response->getBody()->write(json_encode(array("product" => $product)));
-});
-
-//getting product by id
-$app->get('/productId/{productId}', function (Request $request, Response $response) {
-    $productId = $request->getAttribute('productId');
-    $db = new DbOperation();
-    $product = $db->getProductbyId($productId);
-    $response->getBody()->write(json_encode(array("product" => $product)));
+    $products = $db->getProductbyName($productName);
+    $response->getBody()->write(json_encode(array("product" => $products)));
 });
 
 //post product
-$app->post('/sellproduct', function (Request $request, Response $response) {
-    if (isTheseParametersAvailable(array('sellerId', 'productName', 'description', 'quantity', 'price', 'location', 'lat', 'lng', 'productUrl'))) {
-        $sellerId = $request->getParsedBody();
+$app->post('/product', function (Request $request, Response $response) {
+    if (isTheseParametersAvailable(array('sellerId', 'productName', 'description', 'quantity', 'price', 'location', 'lat', 'lng'))) {
+        $requestData = $request->getParsedBody();
+        $uploadedFiles = $request->getUploadedFiles();
+        $sellerId = $requestData['sellerId'];
         $productName = $requestData['productName'];
         $description = $requestData['description'];
         $quantity = $requestData['quantity'];
@@ -117,22 +108,48 @@ $app->post('/sellproduct', function (Request $request, Response $response) {
         $location = $requestData['location'];
         $lat = $requestData['lat'];
         $lng = $requestData['lng'];
-        $productUrl = $requestData['productUrl'];
+        $productImage = $uploadedFiles['productImage'];
         $db = new DbOperation();
         $responseData = array();
 
-        $result = $db->postProduct($sellerId, $productName, $description, $quantity, $price, $location, $lat, $lng, $productUrl);
-
-        if ($result == PRODUCT_CREATED) {
-            $responseData['error'] = false;
-            $responseData['message'] = 'Product has been posted';
-        } elseif ($result == PRODUCT_CREATION_FAILED) {
+        if ($productImage->getError() === UPLOAD_ERR_OK) {
+            $directory = $this->get('products_directory');
+            $productFile = getFileName($productImage);
+            $result = $db->postProduct($sellerId, $productName, $description, $quantity, $price, $location, $lat, $lng, $productFile);
+    
+            if ($result == PRODUCT_CREATED) {
+                moveUploadedFile($directory, $productFile, $productImage);
+                $responseData['error'] = false;
+                $responseData['message'] = 'Product has been posted';
+            } elseif ($result == PRODUCT_CREATION_FAILED) {
+                $responseData['error'] = true;
+                $responseData['message'] = 'Unable to post product';
+            }     
+        } else {
             $responseData['error'] = true;
-            $responseData['message'] = 'Some error occurred';
+            $responseData['message'] = 'Image upload error';
         }
+
+
 
         $response->getBody()->write(json_encode($responseData));
     }
+});
+
+//getting product by id
+$app->get('/product/{id}', function (Request $request, Response $response) {
+    $productId = $request->getAttribute('id');
+    $db = new DbOperation();
+    $product = $db->getProductbyId($productId);
+    $response->getBody()->write(json_encode(array("product" => $product)));
+});
+
+//getting product by id
+$app->delete('/product/{id}', function (Request $request, Response $response) {
+    $productId = $request->getAttribute('id');
+    $db = new DbOperation();
+    $product = $db->getProductbyId($productId);
+    $response->getBody()->write(json_encode(array("product" => $product)));
 });
 
 //getting deals
@@ -208,15 +225,18 @@ function isTheseParametersAvailable($required_fields)
     return true;
 }
 
-function moveUploadedFile($directory, UploadedFile $uploadedFile)
+function getFileName(UploadedFile $uploadedFile)
 {
     $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
     $basename = bin2hex(random_bytes(8)); // see http://php.net/manual/en/function.random-bytes.php
     $filename = sprintf('%s.%0.8s', $basename, $extension);
 
-    $uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename);
-
     return $filename;
+}
+
+function moveUploadedFile($directory, $filename, UploadedFile $uploadedFile)
+{
+    $uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename);
 }
 
 $app->run();

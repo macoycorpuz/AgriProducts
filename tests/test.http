@@ -15,3 +15,10 @@ email=aa
 ###
 GET http://localhost/api-agriproducts/public/users
 ###
+POST http://localhost/api-agriproducts/public/upload
+Content-Type: multipart/form-data; boundary="boundary"
+
+--boundary
+Content-Disposition: form-data; name="example1"; filename="31344_1283953938318_1773938_n.jpg"
+
+< C:\Users\Ryu\Pictures\31344_1283953938318_1773938_n.jpg

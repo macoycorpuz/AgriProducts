@@ -24,12 +24,13 @@ class DbOperation
     }
 
     //Method to create a new user
-    function registerUser($name, $email, $pass, $number, $address, $url)
+    function registerUser($name, $email, $pass, $number, $address, $userFile)
     {
         if (!$this->isUserExist($email)) {
             $password = md5($pass);
+            $userUrl = 'http://' . gethostbyname(gethostname()) . API_PATH . USERS_PATH . $userFile;
             $stmt = $this->con->prepare("INSERT INTO users (name, email, password, number, address, url) VALUES (?, ?, ?, ?, ?, ?)");
-            $stmt->bind_param("ssssss", $name, $email, $password, $number, $address, $url);
+            $stmt->bind_param("ssssss", $name, $email, $password, $number, $address, $userUrl);
             if ($stmt->execute())
                 return USER_CREATED;
             return USER_CREATION_FAILED;
@@ -53,35 +54,31 @@ class DbOperation
     function getProductbyName($productName)
     {
         $sql = "SELECT p.*, u.name FROM products AS p INNER JOIN users AS u ON p.sellerId = u.userId WHERE productName LIKE '%$productName%'";
-        $stmt = $this->con->prepare($sql);
-        $stmt->execute();
-        $product = array();
+        $stmt = $this->con->query($sql);
+        $products = array();
         while($row = $stmt->fetch_assoc()){
-            array_push($product, $row);
+            array_push($products, $row);
         }
-        return $product;
+        return $products;
     }
 
     //Method to get all products
     function getProductbyId($productId)
     {
-        $sql = "SELECT p.*, u.name FROM products AS p INNER JOIN users AS u ON p.sellerId = u.userId WHERE productId = $productId";
-        $stmt = $this->con->prepare($sql);
-        $stmt->execute();
-        $product = array();
-        while($row = $stmt->fetch_assoc()){
-            array_push($product, $row);
-        }
+        $sql = "SELECT p.*, u.name FROM products AS p INNER JOIN users AS u ON p.sellerId = u.userId WHERE p.productId = $productId";
+        $stmt = $this->con->query($sql);
+        $product = $stmt->fetch_assoc();
         return $product;
     }
 
     //Method to post a product
-    function postProduct($sellerId, $prodName, $desc, $quantity, $price, $location, $lat, $lng, $status, $prodUrl)
+    function postProduct($sellerId, $prodName, $desc, $quantity, $price, $location, $lat, $lng, $prodFile)
     {
-        $password = md5($pass);
+        $status = 'Available';
+        $prodUrl = 'http://' . gethostbyname(gethostname()) . API_PATH . PRODUCTS_PATH . $prodFile;
         $stmt = $this->con->prepare("INSERT INTO products (sellerId, productName, description, quantity, price, location, lat, lng, status, productUrl)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("issidsssss", $sellerId, $prodName, $desc, $quantity, $price, $location, $lat, $lng, 'Available', $prodUrl);
+        $stmt->bind_param("issidsssss", $sellerId, $prodName, $desc, $quantity, $price, $location, $lat, $lng, $status, $prodUrl);
         if ($stmt->execute())
             return PRODUCT_CREATED;
         return PRODUCT_CREATION_FAILED;

@@ -18,8 +18,9 @@ CREATE TABLE `admin` (
 
 CREATE TABLE `deals` (
   `dealId` int(11) NOT NULL,
-  `productId` int(11) NOT NULL,
-  `userId` int(11) NOT NULL,
+  `buyerId` int(11) NOT NULL,
+  `sellerId` int(11) NOT NULL,
+  `productId` int(11) NOT
   `time` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -44,6 +45,7 @@ CREATE TABLE `products` (
   `status` varchar(50) NOT NULL,
   `productUrl` varchar(500) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
 
 ALTER TABLE `users`
   ADD PRIMARY KEY (`userId`),
@@ -75,3 +77,4 @@ ALTER TABLE `products`
   MODIFY `productId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 INSERT INTO admin (name, email, password) VALUES ('admin', 'admin', 'admin')
+

@@ -87,16 +87,14 @@ class DbOperation
     //Method to get inbox of a particular user
     function getDeals($userid)
     {
-        $sql = "SELECT * FROM deals AS d
+        $sql = "SELECT d.*, p.productUrl, p.productName FROM deals AS d
         INNER JOIN products AS p ON d.productId = p.productId
         INNER JOIN users AS u ON p.sellerId = u.userId
-        WHERE d.userId = ? AND p.sellerId = ?
+        WHERE d.userId = $userId AND p.sellerId = $userId
         ORDER BY d.time DESC";
-        $stmt = $this->con->prepare($sql);
-        $stmt->bind_param("ii", $userid, $userid);
-        $stmt->execute();
+        $stmt = $this->con->query($sql);
         $inbox = array();
-        while($row = $result->fetch_assoc()) {
+        while($row = $stmt->fetch_assoc()) {
             array_push($inbox,$row);
         }
         return $inbox;

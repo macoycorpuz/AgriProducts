@@ -152,11 +152,19 @@ $app->delete('/product/{id}', function (Request $request, Response $response) {
     $response->getBody()->write(json_encode(array("product" => $product)));
 });
 
-//getting deals
-$app->get('/inbox/{userId}', function (Request $request, Response $response) {
+//getting selling deals
+$app->get('/selling/{userId}', function (Request $request, Response $response) {
     $deals = $request->getAttribute('userId');
     $db = new DbOperation();
-    $deals = $db->getDeals($userid);
+    $deals = $db->getSelling($userid);
+    $response->getBody()->write(json_encode(array("deals" => $deals)));
+});
+
+//getting buying
+$app->get('/buying/{userId}', function (Request $request, Response $response) {
+    $deals = $request->getAttribute('userId');
+    $db = new DbOperation();
+    $deals = $db->getBuying($userid);
     $response->getBody()->write(json_encode(array("deals" => $deals)));
 });
 
@@ -193,7 +201,6 @@ $app->post('/sendmessage', function (Request $request, Response $response) {
     }
 });
 
-//ADMIN API
 //getting all users
 $app->get('/users', function (Request $request, Response $response) {
     $db = new DbOperation();

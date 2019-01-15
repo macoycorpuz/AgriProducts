@@ -168,6 +168,30 @@ $app->get('/buying/{userId}', function (Request $request, Response $response) {
     $response->getBody()->write(json_encode(array("deals" => $deals)));
 });
 
+//sending message to user
+$app->post('/deal', function (Request $request, Response $response) {
+    if (isTheseParametersAvailable(array('productId', 'userId', 'content'))) {
+        $requestData = $request->getParsedBody();
+        $dealId = $requestData['productId'];
+        $userId = $requestData['userId'];
+        $content = $requestData['content'];
+
+        $db = new DbOperation();
+
+        $responseData = array();
+
+        if ($db->sendDeal($from, $to, $title, $message)) {
+            $responseData['error'] = false;
+            $responseData['message'] = 'Deal sent successfully';
+        } else {
+            $responseData['error'] = true;
+            $responseData['message'] = 'Could not send deal';
+        }
+
+        $response->getBody()->write(json_encode($responseData));
+    }
+});
+
 //getting messages for a deal
 $app->get('/messages/{dealId}/{userId}', function (Request $request, Response $response) {
     $dealId = $request->getAttribute('dealId');
@@ -178,18 +202,15 @@ $app->get('/messages/{dealId}/{userId}', function (Request $request, Response $r
 });
 
 //sending message to user
-$app->post('/sendmessage', function (Request $request, Response $response) {
+$app->post('/message', function (Request $request, Response $response) {
     if (isTheseParametersAvailable(array('dealId', 'userId', 'content'))) {
         $requestData = $request->getParsedBody();
         $dealId = $requestData['dealId'];
         $userId = $requestData['userId'];
         $content = $requestData['content'];
-
         $db = new DbOperation();
-
         $responseData = array();
-
-        if ($db->sendMessage($from, $to, $title, $message)) {
+        if ($db->sendMessage($dealId, $userId, $content)) {
             $responseData['error'] = false;
             $responseData['message'] = 'Message sent successfully';
         } else {

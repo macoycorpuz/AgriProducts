@@ -18,8 +18,7 @@ CREATE TABLE `admin` (
 
 CREATE TABLE `deals` (
   `dealId` int(11) NOT NULL,
-  `buyerId` int(11) NOT NULL,
-  `sellerId` int(11) NOT NULL,
+  `buyerId` int(11) NOT NULL
   `productId` int(11) NOT
   `time` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;

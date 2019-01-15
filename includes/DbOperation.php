@@ -85,32 +85,43 @@ class DbOperation
     }
 
     //Method to get inbox of a particular user
-    function getDeals($userid)
+
+    function getSelling($userid)
     {
-        $sql = "SELECT d.*, p.productUrl, p.productName FROM deals AS d
+        $sql = "SELECT d.*, p.productUrl, p.productName, u.name FROM deals AS d
         INNER JOIN products AS p ON d.productId = p.productId
-        INNER JOIN users AS u ON p.sellerId = u.userId
-        WHERE d.userId = $userId AND p.sellerId = $userId
+        INNER JOIN users AS u ON d.buyerId = u.userId
+        WHERE p.sellerId = $userId
         ORDER BY d.time DESC";
         $stmt = $this->con->query($sql);
-        $inbox = array();
+        $selling = array();
         while($row = $stmt->fetch_assoc()) {
-            array_push($inbox,$row);
+            array_push($selling,$row);
         }
-        return $inbox;
+        return $selling;
+    }
+
+    function getBuying($userid)
+    {
+        $sql = "SELECT d.*, p.productUrl, p.productName, u.name FROM deals AS d
+        INNER JOIN products AS p ON d.productId = p.productId
+        INNER JOIN users AS u ON p.sellerId = u.userId
+        WHERE d.buyerId = $userId
+        ORDER BY d.time DESC";
+        $stmt = $this->con->query($sql);
+        $buying = array();
+        while($row = $stmt->fetch_assoc()) {
+            array_push($buying, $row);
+        }
+        return $buying;
     }
 
     //Method to get messages of a particular deal
     function getMessages($dealId, $userId)
     {
-        $sql = "SELECT * FROM messages AS m
-        INNER JOIN deals AS d ON m.dealId = d.dealId
-        INNER JOIN products AS p ON d.productId = p.productId
-        INNER JOIN users AS u ON p.sellerId = u.userId
-        WHERE m.dealId = ? AND m.userId = ?";
-        $stmt = $this->con->prepare($sql);
-        $stmt->bind_param("ii", $dealId, $userId);
-        $stmt->execute();
+        $sql = "SELECT m.* FROM messages AS m
+        WHERE m.dealId = $dealId AND m.userId = $userId";
+        $stmt = $this->con->query($sql);
         $messages = array();
         while($row = $result->fetch_assoc()) {
             array_push($messages,$row);
@@ -119,22 +130,26 @@ class DbOperation
     }
 
     //Method to send a deal
-    function sendDeal($productId, $userId)
+    function sendDeal($productId, $userId, $content)
     {
-        $stmt = $this->con->prepare("INSERT INTO deals (productId, userId, time) VALUES (?, ?, NOW());");
+        $sqlInsertDeal = "INSERT INTO deals (productId, userId, time) VALUES (?, ?, NOW())";
+        $sqlInsertMessage = "INSERT INTO messages (dealId, userId, content, time) VALUES (LAST_INSERT_ID(), ?, ?, NOW())";
+        $stmt = $this->con->prepare($sqlInsertDeal);
         $stmt->bind_param("ii", $dealId, $userId);
-        if ($stmt->execute())
-            return true;
+        $dealExecute = $stmt->execute();
+        $stmt = $this->con->prepare($sqlInsertMessage);
+        $stmt->bind_param("is", $userId, $content);
+        $messageExectue = $stmt->execute();
+        if($dealExecute && $messageExectue) return true;
         return false;
     }
 
     //Method to send a message to another user
     function sendMessage($dealId, $userId, $content)
-    {
+    {        
         $stmt = $this->con->prepare("INSERT INTO messages (dealId, userId, content, time) VALUES (?, ?, ?, NOW());");
         $stmt->bind_param("iis", $dealId, $userId, $content);
-        if ($stmt->execute())
-            return true;
+        if ($stmt->execute()) return true;
         return false;
     }
 

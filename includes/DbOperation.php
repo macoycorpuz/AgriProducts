@@ -24,13 +24,13 @@ class DbOperation
     }
 
     //Method to create a new user
-    function registerUser($name, $email, $pass, $number, $address, $userFile)
+    function registerUser($name, $email, $pass, $number, $address, $userFile, $isActivated)
     {
         if (!$this->isUserExist($email)) {
             $password = md5($pass);
             $userUrl = 'http://' . gethostbyname(gethostname()) . API_PATH . USERS_PATH . $userFile;
-            $stmt = $this->con->prepare("INSERT INTO users (name, email, password, number, address, url) VALUES (?, ?, ?, ?, ?, ?)");
-            $stmt->bind_param("ssssss", $name, $email, $password, $number, $address, $userUrl);
+            $stmt = $this->con->prepare("INSERT INTO users (name, email, password, number, address, url, isActivated) VALUES (?, ?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("ssssssb", $name, $email, $password, $number, $address, $userUrl, $isActivated);
             if ($stmt->execute())
                 return USER_CREATED;
             return USER_CREATION_FAILED;

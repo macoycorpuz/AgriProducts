@@ -15,8 +15,8 @@ $app = new \Slim\App([
 ]);
 
 $container = $app->getContainer();
-$container['users_directory'] = __DIR__ . '/../images/users';
-$container['products_directory'] = __DIR__ . '/../images/products';
+$container['users_directory'] = __DIR__ . '/../images/users/';
+$container['products_directory'] = __DIR__ . '/../images/products/';
 
 //user login route
 $app->post('/login', function (Request $request, Response $response) {
@@ -31,7 +31,7 @@ $app->post('/login', function (Request $request, Response $response) {
 
         if ($db->userLogin($email, $password, $user)) {
             $responseData['error'] = false;
-            $responseData['user'] = $user;
+            $responseData['user'] = $user[0];
         } else {
             $responseData['error'] = true;
             $responseData['message'] = 'Invalid email or password';
@@ -45,28 +45,27 @@ $app->post('/login', function (Request $request, Response $response) {
 $app->post('/register', function (Request $request, Response $response) {
     if (isTheseParametersAvailable(array('name', 'email', 'password', 'number', 'address'))) {
         $requestData = $request->getParsedBody();
-        $uploadedFiles = $request->getUploadedFiles();
         $name = $requestData['name'];
         $email = $requestData['email'];
         $password = $requestData['password'];
         $number = $requestData['number'];
         $address = $requestData['address'];
-        $userImage = $uploadedFiles['userImage'];
         $db = new DbOperation();
         $responseData = array();
 
-        if ($userImage->getError() === UPLOAD_ERR_OK) {
+        if ($_FILES["userImage"]) {
             $directory = $this->get('users_directory');
-            $userFile = getFileName($userImage);
-            $result = $db->registerUser($name, $email, $password, $number, $address, $userFile);
+            $userFile = getFileName();
+            $result = $db->registerUser($name, $email, $password, $number, $address, $userFile, false);
 
             if ($result == USER_CREATED) {
-                moveUploadedFile($directory, $userFile, $userImage);
+                move_uploaded_file($_FILES["userImage"]["tmp_name"], $directory.$userFile);
                 $responseData['error'] = false;
                 $responseData['message'] = 'Registered successfully';
             } elseif ($result == USER_CREATION_FAILED) {
                 $responseData['error'] = true;
                 $responseData['message'] = 'Unable to register user';
+                $responseData['message'] = $userFile;
             } elseif ($result == USER_EXIST) {
                 $responseData['error'] = true;
                 $responseData['message'] = 'This email already exist';
@@ -84,7 +83,8 @@ $app->post('/register', function (Request $request, Response $response) {
 $app->get('/products', function (Request $request, Response $response) {
     $db = new DbOperation();
     $products = $db->getAllProducts();
-    $response->getBody()->write(json_encode(array("products" => $products)));
+    if($products != []) $response->getBody()->write(json_encode(array("products" => $products)));
+    else $response->getBody()->write(json_encode(array("error" => true, "message" => "No product/s found")));
 });
 
 //getting product by name
@@ -92,7 +92,8 @@ $app->get('/productname/{productName}', function (Request $request, Response $re
     $productName = $request->getAttribute('productName');
     $db = new DbOperation();
     $products = $db->getProductbyName($productName);
-    $response->getBody()->write(json_encode(array("product" => $products)));
+    if($products != []) $response->getBody()->write(json_encode(array("products" => $products)));
+    else $response->getBody()->write(json_encode(array("error" => true, "message" => "No product/s found")));
 });
 
 //post product
@@ -137,19 +138,22 @@ $app->post('/product', function (Request $request, Response $response) {
 });
 
 //getting product by id
-$app->get('/product/{id}', function (Request $request, Response $response) {
+$app->get('/product/{id}', function (Request $request, Response $response)  {
     $productId = $request->getAttribute('id');
     $db = new DbOperation();
     $product = $db->getProductbyId($productId);
-    $response->getBody()->write(json_encode(array("product" => $product)));
+    if(isset($product)) $response->getBody()->write(json_encode(array("product" => $product)));
+    else $response->getBody()->write(json_encode(array("error" => true, "message" => "Product not found")));
 });
+
 
 //getting product by id
 $app->delete('/product/{id}', function (Request $request, Response $response) {
     $productId = $request->getAttribute('id');
     $db = new DbOperation();
     $product = $db->getProductbyId($productId);
-    $response->getBody()->write(json_encode(array("product" => $product)));
+    if(isset($product)) $response->getBody()->write(json_encode(array("product" => $product)));
+    else $response->getBody()->write(json_encode(array("error" => true, "message" => "Product not found")));
 });
 
 //getting selling deals
@@ -157,7 +161,8 @@ $app->get('/selling/{userId}', function (Request $request, Response $response) {
     $deals = $request->getAttribute('userId');
     $db = new DbOperation();
     $deals = $db->getSelling($userid);
-    $response->getBody()->write(json_encode(array("deals" => $deals)));
+    if(isset($deals)) $response->getBody()->write(json_encode(array("deals" => $deals)));
+    else $response->getBody()->write(json_encode(array("error" => true, "message" => "No deals found")));
 });
 
 //getting buying
@@ -165,7 +170,8 @@ $app->get('/buying/{userId}', function (Request $request, Response $response) {
     $deals = $request->getAttribute('userId');
     $db = new DbOperation();
     $deals = $db->getBuying($userid);
-    $response->getBody()->write(json_encode(array("deals" => $deals)));
+    if(isset($deals)) $response->getBody()->write(json_encode(array("deals" => $deals)));
+    else $response->getBody()->write(json_encode(array("error" => true, "message" => "No deals found")));
 });
 
 //sending message to user
@@ -226,7 +232,8 @@ $app->post('/message', function (Request $request, Response $response) {
 $app->get('/users', function (Request $request, Response $response) {
     $db = new DbOperation();
     $users = $db->getAllUsers();
-    $response->getBody()->write(json_encode(array("users" => $users)));
+    if($users != []) $response->getBody()->write(json_encode(array("users" => $users)));
+    else $response->getBody()->write(json_encode(array("error" => true, "message" => "No users found")));
 });
 
 //function to check parameters
@@ -253,10 +260,10 @@ function isTheseParametersAvailable($required_fields)
     return true;
 }
 
-function getFileName(UploadedFile $uploadedFile)
+function getFileName()
 {
-    $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
-    $basename = bin2hex(random_bytes(8)); // see http://php.net/manual/en/function.random-bytes.php
+    $extension = "jpg";
+    $basename = bin2hex(random_bytes(8)); 
     $filename = sprintf('%s.%0.8s', $basename, $extension);
 
     return $filename;

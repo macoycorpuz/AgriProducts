@@ -65,7 +65,6 @@ $app->post('/register', function (Request $request, Response $response) {
             } elseif ($result == USER_CREATION_FAILED) {
                 $responseData['error'] = true;
                 $responseData['message'] = 'Unable to register user';
-                $responseData['message'] = $userFile;
             } elseif ($result == USER_EXIST) {
                 $responseData['error'] = true;
                 $responseData['message'] = 'This email already exist';
@@ -83,24 +82,37 @@ $app->post('/register', function (Request $request, Response $response) {
 $app->get('/products', function (Request $request, Response $response) {
     $db = new DbOperation();
     $products = $db->getAllProducts();
-    if($products != []) $response->getBody()->write(json_encode(array("products" => $products)));
-    else $response->getBody()->write(json_encode(array("error" => true, "message" => "No product/s found")));
+    $responseData = array();
+    if($products != []) {
+        $responseData['error'] = false;
+        $responseData['products'] = $products;
+    } else {
+        $responseData['error'] = true;
+        $responseData['message'] = 'No product/s found';
+    }
+    $response->getBody()->write(json_encode($responseData)); 
 });
 
 //getting product by name
-$app->get('/productname/{productName}', function (Request $request, Response $response) {
+$app->get('/products/{productName}', function (Request $request, Response $response) {
     $productName = $request->getAttribute('productName');
     $db = new DbOperation();
     $products = $db->getProductbyName($productName);
-    if($products != []) $response->getBody()->write(json_encode(array("products" => $products)));
-    else $response->getBody()->write(json_encode(array("error" => true, "message" => "No product/s found")));
+    $responseData = array();
+    if($products != []) {
+        $responseData['error'] = false;
+        $responseData['products'] = $products;
+    } else {
+        $responseData['error'] = true;
+        $responseData['message'] = 'No product/s found';
+    }
+    $response->getBody()->write(json_encode($responseData)); 
 });
 
 //post product
 $app->post('/product', function (Request $request, Response $response) {
     if (isTheseParametersAvailable(array('sellerId', 'productName', 'description', 'quantity', 'price', 'location', 'lat', 'lng'))) {
         $requestData = $request->getParsedBody();
-        $uploadedFiles = $request->getUploadedFiles();
         $sellerId = $requestData['sellerId'];
         $productName = $requestData['productName'];
         $description = $requestData['description'];
@@ -109,17 +121,16 @@ $app->post('/product', function (Request $request, Response $response) {
         $location = $requestData['location'];
         $lat = $requestData['lat'];
         $lng = $requestData['lng'];
-        $productImage = $uploadedFiles['productImage'];
         $db = new DbOperation();
         $responseData = array();
 
-        if ($productImage->getError() === UPLOAD_ERR_OK) {
+        if ($_FILES["productImage"]) {
             $directory = $this->get('products_directory');
-            $productFile = getFileName($productImage);
+            $productFile = getFileName();
             $result = $db->postProduct($sellerId, $productName, $description, $quantity, $price, $location, $lat, $lng, $productFile);
     
             if ($result == PRODUCT_CREATED) {
-                moveUploadedFile($directory, $productFile, $productImage);
+                move_uploaded_file($_FILES["productImage"]["tmp_name"], $directory.$productFile);
                 $responseData['error'] = false;
                 $responseData['message'] = 'Product has been posted';
             } elseif ($result == PRODUCT_CREATION_FAILED) {
@@ -142,8 +153,15 @@ $app->get('/product/{id}', function (Request $request, Response $response)  {
     $productId = $request->getAttribute('id');
     $db = new DbOperation();
     $product = $db->getProductbyId($productId);
-    if(isset($product)) $response->getBody()->write(json_encode(array("product" => $product)));
-    else $response->getBody()->write(json_encode(array("error" => true, "message" => "Product not found")));
+    $responseData = array();
+    if($product != null) {
+        $responseData['error'] = false;
+        $responseData['product'] = $product;
+    } else {
+        $responseData['error'] = true;
+        $responseData['message'] = 'No product/s found';
+    }
+    $response->getBody()->write(json_encode($responseData)); 
 });
 
 

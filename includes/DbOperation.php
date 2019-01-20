@@ -132,7 +132,7 @@ class DbOperation
     //Method to send a deal
     function sendDeal($productId, $userId, $content)
     {
-        $sqlInsertDeal = "INSERT INTO deals (productId, userId, time) VALUES (?, ?, NOW())";
+        $sqlInsertDeal = "INSERT INTO deals (productId, buyerId, time) VALUES (?, ?, NOW())";
         $sqlInsertMessage = "INSERT INTO messages (dealId, userId, content, time) VALUES (LAST_INSERT_ID(), ?, ?, NOW())";
         $stmt = $this->con->prepare($sqlInsertDeal);
         $stmt->bind_param("ii", $dealId, $userId);

@@ -47,7 +47,16 @@ CREATE TABLE products (
   productUrl varchar(500) NOT NULL,
   PRIMARY KEY (productId)
 );
-INSERT INTO admin (name, email, password) VALUES ('admin', 'admin', 'admin')
+INSERT INTO admin (name, email, password) VALUES ('admin', 'admin', 'admin');
 
+INSERT INTO users (name, email, password, number, address, url, isActivated) VALUES ('marcuz',	'aa@gmail.com',	'e09c80c42fda55f9d992e59ca6b3307d',	'0955',	'here',	'http://agriproducts.000webhostapp.com/images/users/3e54403cb6b8b86b.jpg)', 0);
+
+insert into products(sellerId, productName, description, quantity, price, location, lat, lng, status, productUrl) values(1, 'product2', 'hello', 100, 100, '5-B Don Guillermo, Quezon City, 1127 Metro Manila, Philippines', '14.681757500000012', '121.07923046874996', 'Available', 'http://agriproducts.000webhostapp.com/images/products/grass.jpg');
+
+insert into products(sellerId, productName, description, quantity, price, location, lat, lng, status, productUrl) values(1, 'product3', 'hello', 100, 100, '5-B Don Guillermo, Quezon City, 1127 Metro Manila, Philippines', '14.681757500000012', '121.07923046874996', 'Available', 'http://agriproducts.000webhostapp.com/images/products/papaya.jpg');
+
+insert into products(sellerId, productName, description, quantity, price, location, lat, lng, status, productUrl) values(1, 'product4', 'hello', 100, 100, '5-B Don Guillermo, Quezon City, 1127 Metro Manila, Philippines', '14.681757500000012', '121.07923046874996', 'Available', 'http://agriproducts.000webhostapp.com/images/products/grass.jpg');
+
+insert into products(sellerId, productName, description, quantity, price, location, lat, lng, status, productUrl) values(1, 'product5', 'hello', 100, 100, '5-B Don Guillermo, Quezon City, 1127 Metro Manila, Philippines', '14.681757500000012', '121.07923046874996', 'Available', 'http://agriproducts.000webhostapp.com/images/products/papaya.jpg');
 
 

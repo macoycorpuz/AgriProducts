@@ -1,0 +1,83 @@
+<resources>
+    <string name="app_name">AgriProducts</string>
+
+    <!-- String titles -->
+    <string name="title_home">Home</string>
+    <string name="title_sell">Sell</string>
+    <string name="title_inbox">Inbox</string>
+    <string name="title_account">Account</string>
+    <string name="title_my_products">My Products</string>
+
+    <!-- Views title -->
+    <string name="title_activity_login">Login</string>
+    <string name="title_activity_sign_up">Create an account</string>
+    <string name="title_fragment_products">Products</string>
+    <string name="title_fragment_sell_product">Sell a Product</string>
+    <string name="title_fragment_inbox">Inbox</string>
+    <string name="title_fragment_my_products">My Products</string>
+    <string name="title_fragment_account">Account</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_login">Login</string>
+    <string name="action_register">I don\'t have an account</string>
+    <string name="error_login">Invalid email or password</string>
+    <string name="error_invalid_email">Email is invalid</string>
+    <string name="error_invalid_password">Password is invalid</string>
+
+    <!-- Strings related to sign up -->
+    <string name="prompt_name">Name</string>
+    <string name="prompt_confirm_password">Confirm Password</string>
+    <string name="prompt_mobile_number">Mobile Number</string>
+    <string name="prompt_address">Complete Address</string>
+    <string name="prompt_valid_id">Valid ID</string>
+    <string name="action_upload">Upload Valid ID</string>
+    <string name="action_sign_up">Sign Up</string>
+    <string name="action_sign_in">I already have an account.</string>
+    <string name="error_sign_up">Please fill up all fields</string>
+    <string name="error_valid_id">Please upload a valid id</string>
+
+    <!-- Strings related to products -->
+    <string name="prompt_product_search">Search</string>
+    <string name="prompt_product_name">Product Name</string>
+    <string name="prompt_description">Description</string>
+    <string name="prompt_location">Location</string>
+    <string name="prompt_quantity">Quantity</string>
+    <string name="prompt_price">Price</string>
+    <string name="prompt_product_image">Product Image</string>
+    <string name="action_message">Message</string>
+    <string name="action_make_an_offer">Make an Offer</string>
+
+    <!-- String related to selling -->
+    <string name="action_product_sell">Sell Product</string>
+    <string name="action_product_upload">Upload Product Picture</string>
+    <string name="error_sell_product">Please fill up all fields</string>
+    <string name="error_product_image">Please upload product picture</string>
+
+    <!-- Strings related to inbox -->
+    <string name="action_selling">Selling</string>
+    <string name="action_buying">Buying</string>
+    <string name="error_inbox">No messages</string>
+
+    <!-- Strings related to messaging -->
+    <string name="prompt_message">Enter Message</string>
+    <string name="prompt_content">Content here</string>
+    <string name="prompt_details">Details here</string>
+    <string name="action_send">Send</string>
+    <string name="error_message">No messages</string>
+
+    <!-- Strings realted to account -->
+    <string name="action_change_password">Change Password</string>
+    <string name="action_logout">Logout</string>
+
+    <!-- Strings related to network errors -->
+    <string name="error_network_timeout">Network Timeout</string>
+    <string name="error_auth_failure">Authentication Failure</string>
+    <string name="error__server">Server Error</string>
+    <string name="error__network">Network Error</string>
+    <string name="error__parse">Parse Error</string>
+    <string name="error_response">No Response</string>
+
+    <string name="google_maps_key">AIzaSyCe40ZfvQ0tshWoktKRv3sfwXaQ9o0Fswk</string>
+</resources>

@@ -1,6 +1,5 @@
 package thesis.agriproducts.domain;
 
-import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Field;
@@ -14,24 +13,8 @@ import retrofit2.http.Multipart;
 import retrofit2.http.DELETE;
 import thesis.agriproducts.model.entities.Message;
 import thesis.agriproducts.model.entities.Result;
-import thesis.agriproducts.model.entities.User;
-import thesis.agriproducts.model.entities.Product;
 import thesis.agriproducts.model.entities.Deal;
-import java.util.List;
 
-// login - POST email, password RESPONSE error, message/user
-// register - POST name, email, password, number, address, userImage RESPONSE error, message
-// products - GET RESPONSE products
-// product - POST sellerId, productName, description, quantity, price, location, lat, lng, productImage RESPONSE error, message
-// product - GET productId RESPONSE products
-// product - DELETE productId (NOT FINISHED)
-// productName - GET RESPONSE PRODUCTS
-// selling - GET userId RESPONSE deals
-// buying - GET userId RESPONSE deals
-// deal - POST productId, userId, content RESPONSE error, message
-// messages - GET dealId, userId RESPONSE messages
-// message - POST dealId, userId, content RESPONSE error, message
-// users - GET RESPONSE users
 public interface ApiServices {
 
 //    String MAIN_URL = "http://agriproducts.000webhostapp.com/public/";
@@ -51,10 +34,10 @@ public interface ApiServices {
     //endregion
 
     //region Home
-    @GET("products")
-    Call<Result> getProducts();
+    @GET("products/{userId}")
+    Call<Result> getProducts(@Path("userId") int userId);
 
-    @GET("products/{productName}")
+    @GET("productName/{productName}")
     Call<Result> getProductbyName(@Path("productName") String productName);
     //endregion
 
@@ -93,8 +76,17 @@ public interface ApiServices {
     //endregion
 
     //region My Products
+    @GET("myproducts/{sellerId}")
+    Call<Result> getMyProducts(@Path("sellerId") int userId);
+
     @DELETE("product/{productId}")
     Call<Result> deleteProduct(@Path("productId") int productId);
+    //endregion
+
+    //region Account
+    @FormUrlEncoded
+    @POST("changepassword")
+    Call<Result> changePassoword(@Field("userId") int userId, @Field("oldPassword") String oldPassword, @Field("newPassword") String newPassword);
     //endregion
 
     //region Admin

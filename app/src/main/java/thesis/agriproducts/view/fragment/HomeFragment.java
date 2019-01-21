@@ -29,6 +29,7 @@ import thesis.agriproducts.domain.Api;
 import thesis.agriproducts.domain.ApiServices;
 import thesis.agriproducts.model.entities.Product;
 import thesis.agriproducts.model.entities.Result;
+import thesis.agriproducts.util.SharedPrefManager;
 import thesis.agriproducts.util.Tags;
 import thesis.agriproducts.util.Utils;
 import thesis.agriproducts.view.activity.HomeActivity;
@@ -46,6 +47,7 @@ public class HomeFragment extends Fragment {
     ProgressBar mProgress;
     SwipeRefreshLayout mSwipeRefreshLayout;
     List<Product> productList;
+    int userId;
     //endregion
 
     @Override
@@ -75,6 +77,8 @@ public class HomeFragment extends Fragment {
                 showProducts(null);
             }
         });
+
+        userId = SharedPrefManager.getInstance().getUser(getActivity()).getUserId();
         showProducts(null);
         return mView;
     }
@@ -87,7 +91,7 @@ public class HomeFragment extends Fragment {
         Utils.getUtils().showProgress(true, mProgress, mRecyclerView);
         ApiServices api = Api.getInstance().getApiServices();
         Call<Result> call;
-        if(productName == null) call = api.getProducts();
+        if(productName == null) call = api.getProducts(userId);
         else call = api.getProductbyName(productName);
         call.enqueue(new Callback<Result>() {
             @Override

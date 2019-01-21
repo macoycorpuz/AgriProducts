@@ -27,7 +27,7 @@ public class LoginActivity extends AppCompatActivity{
     private EditText mEmailView;
     private EditText mPasswordView;
     private TextView mErrorView;
-    private String error;
+    ProgressDialog pDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +84,7 @@ public class LoginActivity extends AppCompatActivity{
     //TODO: Add Admin login
     //TODO: Check if activated
     private void login(String email, String password) {
-        final ProgressDialog pDialog = Utils.showProgressDialog(this, "Logging In...");
+        pDialog = Utils.showProgressDialog(this, "Logging In...");
         ApiServices api = Api.getInstance().getApiServices();
         Call<Result> call = api.login(email, password);
 
@@ -102,19 +102,20 @@ public class LoginActivity extends AppCompatActivity{
                     startActivity(new Intent(getApplicationContext(), HomeActivity.class));
 
                 } catch (Exception ex) {
-                    error = "Api Response Error: " + ex.getMessage();
-                    mErrorView.setText(error);
-                    mErrorView.setVisibility(View.VISIBLE);
+                    handleError(ex.getMessage());
                 }
             }
             @Override
             public void onFailure(@Nullable Call<Result> call,@NonNull Throwable t) {
-                Utils.dismissProgressDialog(pDialog);
-                error = "Api Failure: " + t.getMessage();
-                mErrorView.setText(error);
-                mErrorView.setVisibility(View.VISIBLE);
+                handleError("Api Failure: " + t.getMessage());
             }
         });
+    }
+
+    private void handleError(String error) {
+        Utils.dismissProgressDialog(pDialog);
+        mErrorView.setText(error);
+        mErrorView.setVisibility(View.VISIBLE);
     }
 }
 

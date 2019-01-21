@@ -79,9 +79,10 @@ $app->post('/register', function (Request $request, Response $response) {
 });
 
 //getting all products
-$app->get('/products', function (Request $request, Response $response) {
+$app->get('/products/{userId}', function (Request $request, Response $response) {
+    $userId = $request->getAttribute('userId');
     $db = new DbOperation();
-    $products = $db->getAllProducts();
+    $products = $db->getAllProducts($userId);
     $responseData = array();
     if($products != []) {
         $responseData['error'] = false;
@@ -94,7 +95,7 @@ $app->get('/products', function (Request $request, Response $response) {
 });
 
 //getting product by name
-$app->get('/products/{productName}', function (Request $request, Response $response) {
+$app->get('/productName/{productName}', function (Request $request, Response $response) {
     $productName = $request->getAttribute('productName');
     $db = new DbOperation();
     $products = $db->getProductbyName($productName);
@@ -163,7 +164,6 @@ $app->get('/product/{id}', function (Request $request, Response $response)  {
     }
     $response->getBody()->write(json_encode($responseData)); 
 });
-
 
 //getting product by id
 $app->delete('/product/{id}', function (Request $request, Response $response) {
@@ -243,6 +243,44 @@ $app->post('/message', function (Request $request, Response $response) {
         }
 
         $response->getBody()->write(json_encode($responseData));
+    }
+});
+
+//getting all products
+$app->get('/myproducts/{sellerId}', function (Request $request, Response $response) {
+    $sellerId = $request->getAttribute('sellerId');
+    $db = new DbOperation();
+    $products = $db->getMyProducts($sellerId);
+    $responseData = array();
+    if($products != []) {
+        $responseData['error'] = false;
+        $responseData['products'] = $products;
+    } else {
+        $responseData['error'] = true;
+        $responseData['message'] = 'No product/s found';
+    }
+    $response->getBody()->write(json_encode($responseData)); 
+});
+
+//change password
+$app->post('/changepassword', function (Request $request, Response $response) {
+    if (isTheseParametersAvailable(array('userId', 'oldPassword', 'newPassword'))) {
+        $requestData = $request->getParsedBody();
+        $userId = $requestData['userId'];
+        $oldPassword = $requestData['oldPassword'];
+        $newPassword = $requestData['newPassword'];
+        $db = new DbOperation();
+        $responseData = array();
+
+        $result = $db->changePassword($userId, $oldPassword, $newPassword);
+        if ($result) {
+            $responseData['error'] = false;
+            $responseData['message'] = 'Password has been changed.';
+        } else{
+            $responseData['error'] = true;
+            $responseData['message'] = 'Incorrect password.';
+        } 
+        $response->getBody()->write(json_encode($responseData));   
     }
 });
 

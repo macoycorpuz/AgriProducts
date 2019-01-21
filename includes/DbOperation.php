@@ -39,9 +39,9 @@ class DbOperation
     }
 
     //Method to get all products
-    function getAllProducts()
+    function getAllProducts($userId)
     {
-        $sql = "SELECT p.*, u.name FROM products AS p INNER JOIN users AS u ON p.sellerId = u.userId ORDER BY p.productId DESC";
+        $sql = "SELECT p.*, u.name FROM products AS p INNER JOIN users AS u ON p.sellerId = u.userId WHERE NOT p.sellerId = $userId ORDER BY p.productId DESC";
         $stmt = $this->con->query($sql);
         $products = array();
         while($row = $stmt->fetch_assoc()){
@@ -150,6 +150,30 @@ class DbOperation
         $stmt = $this->con->prepare("INSERT INTO messages (dealId, userId, content, time) VALUES (?, ?, ?, NOW());");
         $stmt->bind_param("iis", $dealId, $userId, $content);
         if ($stmt->execute()) return true;
+        return false;
+    }
+
+    function getMyProducts($sellerId)
+    {
+        $sql = "SELECT p.*, u.name FROM products AS p INNER JOIN users AS u ON p.sellerId = u.userId WHERE p.sellerId = $sellerId ORDER BY p.productId DESC";
+        $stmt = $this->con->query($sql);
+        $products = array();
+        while($row = $stmt->fetch_assoc()){
+            array_push($products, $row);
+        }
+        return $products;
+    }
+
+    function changePassword($userId, $oldPassword, $newPassword) {
+        $oldP = md5($oldPassword);
+        $newP = md5($newPassword);
+        $stmt = $this->con->query("SELECT * FROM users WHERE userId = $userId AND password = '$oldP'");
+        if($stmt->num_rows > 0) {
+            $stmt = $this->con->prepare("UPDATE users SET password = ? WHERE userId = ?");
+            $stmt->bind_param("si", $newP, $userId);
+            if ($stmt->execute()) 
+                return true;
+        }
         return false;
     }
 

@@ -113,31 +113,51 @@
 
     </ScrollView>
 
-    <LinearLayout
+    <Button
+        android:id="@+id/btnDeleteProduct"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight=".20"
-        android:layout_gravity="center"
-        android:layout_margin="5dp"
-        android:gravity="center"
-        android:orientation="horizontal">
+        android:layout_gravity="center_vertical|center_horizontal"
+        android:textStyle="bold"
+        android:text="@string/action_delete"
+        android:visibility="gone"/>
 
-        <Button
-            android:id="@+id/btnMessage"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight=".50"
-            android:layout_gravity="center_vertical|center_horizontal"
-            android:textStyle="bold"
-            android:text="@string/action_message"/>
+    <Button
+        android:id="@+id/btnMakeOffer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight=".20"
+        android:layout_gravity="center_vertical|center_horizontal"
+        android:textStyle="bold"
+        android:text="@string/action_make_an_offer"/>
 
-        <Button
-            android:id="@+id/btnMakeOffer"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight=".50"
-            android:layout_gravity="center_vertical|center_horizontal"
-            android:textStyle="bold"
-            android:text="@string/action_make_an_offer"/>
-    </LinearLayout>
+    <!--<LinearLayout-->
+        <!--android:id="@+id/layoutProdButtons"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_weight=".20"-->
+        <!--android:layout_gravity="center"-->
+        <!--android:layout_margin="5dp"-->
+        <!--android:gravity="center"-->
+        <!--android:orientation="horizontal">-->
+
+        <!--<Button-->
+            <!--android:id="@+id/btnMessage"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight=".50"-->
+            <!--android:layout_gravity="center_vertical|center_horizontal"-->
+            <!--android:textStyle="bold"-->
+            <!--android:text="@string/action_message"/>-->
+
+        <!--<Button-->
+            <!--android:id="@+id/btnMakeOffer"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight=".50"-->
+            <!--android:layout_gravity="center_vertical|center_horizontal"-->
+            <!--android:textStyle="bold"-->
+            <!--android:text="@string/action_make_an_offer"/>-->
+    <!--</LinearLayout>-->
 </LinearLayout>

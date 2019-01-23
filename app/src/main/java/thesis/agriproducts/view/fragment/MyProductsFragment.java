@@ -104,6 +104,7 @@ public class MyProductsFragment extends Fragment {
             @Override
             public void onItemClick(View view, int position) {
                 Utils.setProductId(productList.get(position).getProductId());
+                Utils.setIsMyProduct(true);
                 Utils.switchContent(getActivity(), R.id.fragContainer, Tags.PRODUCT_DETAILS_FRAGMENT);
             }
         });

@@ -48,6 +48,7 @@
     <string name="prompt_product_image">Product Image</string>
     <string name="action_message">Message</string>
     <string name="action_make_an_offer">Make an Offer</string>
+    <string name="action_delete">Delete Product</string>
 
     <!-- String related to selling -->
     <string name="action_product_sell">Sell Product</string>

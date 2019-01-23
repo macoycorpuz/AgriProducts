@@ -3,8 +3,10 @@ package thesis.agriproducts.util;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -15,9 +17,13 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.CursorLoader;
+import android.text.InputType;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.text.TextUtils;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+
 import thesis.agriproducts.AppController;
 import thesis.agriproducts.view.fragment.AccountFragment;
 import thesis.agriproducts.view.fragment.HomeFragment;
@@ -30,6 +36,7 @@ import thesis.agriproducts.view.fragment.SellFragment;
 public class Utils {
 
     private static int productId = 0;
+    private static boolean isMyProduct = false;
     private static String CURRENT_TAG = null;
     private static Utils utils;
 
@@ -84,6 +91,7 @@ public class Utils {
         }
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
+
     //endregion
 
     //region Authentication
@@ -145,6 +153,7 @@ public class Utils {
                 } else if (TAG.equals(Tags.PRODUCT_DETAILS_FRAGMENT)) {
                     fragmentToReplace = new ProductDetailsFragment();
                     ((ProductDetailsFragment) fragmentToReplace).setProductId(productId);
+                    ((ProductDetailsFragment) fragmentToReplace).setIsMyProduct(isMyProduct);
                 }
             } else {
                 if (TAG.equals(Tags.HOME_FRAGMENT)) {
@@ -160,6 +169,7 @@ public class Utils {
                 } else if (TAG.equals(Tags.PRODUCT_DETAILS_FRAGMENT)) {
                     fragmentToReplace = (ProductDetailsFragment) fragment;
                     ((ProductDetailsFragment) fragmentToReplace).setProductId(productId);
+                    ((ProductDetailsFragment) fragmentToReplace).setIsMyProduct(isMyProduct);
                 }
             }
 
@@ -173,6 +183,8 @@ public class Utils {
     public static void setProductId(int productId) {
         Utils.productId = productId;
     }
+
+    public static void setIsMyProduct(boolean isMyProduct) {Utils.isMyProduct = isMyProduct; }
     //endregion
 
 }

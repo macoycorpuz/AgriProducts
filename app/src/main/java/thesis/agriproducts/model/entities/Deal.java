@@ -22,7 +22,7 @@ public class Deal {
         this.content = content;
     }
 
-    public Deal(int productId, int buyerId, String time, String content) {
+    public Deal(int productId, int buyerId, String content) {
         this.productId = productId;
         this.buyerId = buyerId;
         this.time = time;

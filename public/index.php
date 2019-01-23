@@ -194,17 +194,17 @@ $app->get('/buying/{userId}', function (Request $request, Response $response) {
 
 //sending message to user
 $app->post('/deal', function (Request $request, Response $response) {
-    if (isTheseParametersAvailable(array('productId', 'userId', 'content'))) {
+    if (isTheseParametersAvailable(array('productId', 'buyerId', 'content'))) {
         $requestData = $request->getParsedBody();
-        $dealId = $requestData['productId'];
-        $userId = $requestData['userId'];
+        $productId = $requestData['productId'];
+        $buyerId = $requestData['buyerId'];
         $content = $requestData['content'];
 
         $db = new DbOperation();
 
         $responseData = array();
 
-        if ($db->sendDeal($from, $to, $title, $message)) {
+        if ($db->sendDeal($productId, $title, $content)) {
             $responseData['error'] = false;
             $responseData['message'] = 'Deal sent successfully';
         } else {

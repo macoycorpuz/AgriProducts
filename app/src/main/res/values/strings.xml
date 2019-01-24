@@ -7,6 +7,8 @@
     <string name="title_inbox">Inbox</string>
     <string name="title_account">Account</string>
     <string name="title_my_products">My Products</string>
+    <string name="title_users">Users</string>
+    <string name="title_products">Products</string>
 
     <!-- Views title -->
     <string name="title_activity_login">Login</string>

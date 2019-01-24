@@ -104,6 +104,7 @@ public class SellFragment extends Fragment {
                     InputStream imageStream = getActivity().getContentResolver().openInputStream(fileUri);
                     Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
                     mProductImage.setImageBitmap(selectedImage);
+                    mProductImage.setScaleType(ImageView.ScaleType.FIT_CENTER);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

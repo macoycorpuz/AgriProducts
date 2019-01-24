@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +37,10 @@ public class InboxFragment extends Fragment {
     int userId;
     int BUYING_FLAG = 1;
     int SELLING_FLAG = 2;
+
+    ApiServices api = Api.getInstance().getApiServices();
+    Call<Result> call;
+
     View mView;
     RecyclerView mRecyclerView;
     InboxAdapter mAdapter;
@@ -55,8 +60,6 @@ public class InboxFragment extends Fragment {
         mRecyclerView = mView.findViewById(R.id.recyclerViewInbox);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-
-
         userId = SharedPrefManager.getInstance().getUser(getActivity()).getUserId();
         mSellingBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,36 +77,44 @@ public class InboxFragment extends Fragment {
     }
 
     private void showDeals(int dealFlag) {
-        Utils.getUtils().showProgress(true, mProgress, mRecyclerView);
-        ApiServices api = Api.getInstance().getApiServices();
-        Call<Result> call;
-        if(dealFlag == BUYING_FLAG) call = api.getBuying(userId);
-        else call = api.getSelling(userId);
-        call.enqueue(new Callback<Result>() {
-            @Override
-            public void onResponse(@Nullable Call<Result> call, @NonNull Response<Result> response) {
-                try {
-                    Utils.getUtils().showProgress(false, mProgress, mRecyclerView);
-                    if(response.errorBody() != null)
-                        throw new Exception(response.errorBody().string());
-                    if(response.body().getError())
-                        throw new Exception(response.body().getMessage());
-                    dealList = response.body().getDeals();
-                    fillDeals();
-                } catch (Exception ex) {
-                    handleError(ex.getMessage());
+        try {
+            Utils.getUtils().showProgress(true, mProgress, mRecyclerView);
+            call = (dealFlag == BUYING_FLAG) ? api.getBuying(userId) : api.getSelling(userId);
+            call.enqueue(new Callback<Result>() {
+                @Override
+                public void onResponse(@Nullable Call<Result> call, @NonNull Response<Result> response) {
+                    try {
+                        Utils.getUtils().showProgress(false, mProgress, mRecyclerView);
+                        if (response.errorBody() != null)
+                            throw new Exception(response.errorBody().string());
+                        if (response.body().getError())
+                            throw new Exception(response.body().getMessage());
+                        dealList = response.body().getDeals();
+                        fillDeals();
+                    } catch (Exception ex) {
+                        handleError(ex.getMessage());
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(@Nullable Call<Result> call, @NonNull Throwable t) {
-                handleError("Api Failure: " + t.getMessage());
-            }
-        });
+                @Override
+                public void onFailure(@Nullable Call<Result> call, @NonNull Throwable t) {
+                    handleError("Api Failure: " + t.getMessage());
+                }
+            });
+        } catch (Exception ex) {
+            Toast.makeText(getActivity(), ex.getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 
     private void fillDeals() {
         mAdapter = new InboxAdapter(getActivity(), dealList);
+        mAdapter.setOnItemClickListener(new InboxAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                //TODO: Go to Messages
+            }
+        });
+
         mRecyclerView.setAdapter(mAdapter);
     }
 

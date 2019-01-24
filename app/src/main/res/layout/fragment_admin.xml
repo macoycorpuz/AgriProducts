@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingLeft="@dimen/fragment_horizontal_margin"
+    android:paddingTop="@dimen/fragment_vertical_margin"
+    android:paddingRight="@dimen/fragment_horizontal_margin"
+    android:paddingBottom="@dimen/fragment_vertical_margin">
+    <TextView
+        android:id="@+id/txtTitleAdmin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/spacing_margin"
+        android:textSize="@dimen/frag_title_size"
+        android:textStyle="bold"
+        android:textColor="@color/colorBlack"/>
+
+    <TextView
+        android:id="@+id/txtAdminError"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/txtTitleAdmin"
+        android:textColor="@color/colorError"
+        android:visibility="gone"
+        android:layout_marginTop="@dimen/error_vertical_margin"/>
+
+    <ProgressBar
+        android:id="@+id/progAdmin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/txtAdminError"
+        android:layout_marginTop="@dimen/progress_margin"
+        android:visibility="gone"
+        style="?android:attr/progressBarStyleLarge"/>
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipeViewAdmin"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/txtAdminError">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerViewAdmin"
+            android:clipToPadding="false"
+            android:paddingBottom="100dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="vertical"/>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+</RelativeLayout>

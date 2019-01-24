@@ -34,24 +34,25 @@ public interface ApiServices {
     //endregion
 
     //region Home
-    @GET("products/{userId}")
+    @GET("products/userId/{userId}")
     Call<Result> getProducts(@Path("userId") int userId);
 
-    @GET("productName/{productName}")
-    Call<Result> getProductbyName(@Path("productName") String productName);
+    @GET("products/productName/{productName}")
+    Call<Result> getProductByName(@Path("productName") String productName);
     //endregion
 
     //region Product Details
-    @GET("product/{productId}")
+    @GET("products/productId/{productId}")
     Call<Result> getProduct(@Path("productId") int productId);
 
-    @POST("deal")
-    Call<Result> postDeal(@Body Deal deal);
+    @FormUrlEncoded
+    @POST("deals/new")
+    Call<Result> postDeal(@Field("productId") int productId, @Field("buyerId") int buyerId, @Field("content") String content);
     //endregion
 
     //region Sell Product
     @Multipart
-    @POST("product")
+    @POST("products/new")
     Call<Result> postProduct(@Part("sellerId") RequestBody sellerId, @Part("productName") RequestBody productName,
                              @Part("description") RequestBody description, @Part("quantity") RequestBody quantity,
                              @Part("price") RequestBody price, @Part("location") RequestBody location, @Part("lat") RequestBody lat,
@@ -60,38 +61,41 @@ public interface ApiServices {
     //endregion
 
     //region Inbox
-    @GET("selling/userId")
+    @GET("deals/selling/{userId}")
     Call<Result> getSelling(@Path("userId") int userId);
 
-    @GET("buying/userId")
+    @GET("deals/buying/{userId}")
     Call<Result> getBuying(@Path("userId") int userId);
     //endregion
 
     //region Messages
-    @GET("messages/{dealId}/{userId}")
+    @GET("messages/dealId/{dealId}/userId/{userId}")
     Call<Result> getMessages(@Path("dealId") int dealId, @Path("userId") int userId);
 
-    @POST("message")
+    @POST("messages/new")
     Call<Result> sendMessage(@Body Message message);
     //endregion
 
     //region My Products
-    @GET("myproducts/{sellerId}")
+    @GET("products/sellerId/{sellerId}")
     Call<Result> getMyProducts(@Path("sellerId") int userId);
 
-    @DELETE("product/{productId}")
+    @DELETE("products/delete/{productId}")
     Call<Result> deleteProduct(@Path("productId") int productId);
     //endregion
 
     //region Account
     @FormUrlEncoded
-    @POST("changepassword")
+    @POST("users/change/password")
     Call<Result> changePassoword(@Field("userId") int userId, @Field("oldPassword") String oldPassword, @Field("newPassword") String newPassword);
     //endregion
 
     //region Admin
     @GET("users")
-    Call<Result> getUsers();
+    Call<Result> getAllUsers();
+
+    @GET("products")
+    Call<Result> getAllProducts();
     //endregion
 
 }

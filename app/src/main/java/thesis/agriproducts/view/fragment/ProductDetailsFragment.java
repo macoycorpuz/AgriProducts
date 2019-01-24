@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,7 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
+import okhttp3.internal.Util;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -37,9 +39,14 @@ import thesis.agriproducts.util.Tags;
 import thesis.agriproducts.util.Utils;
 import thesis.agriproducts.view.adapter.ProductAdapter;
 
+
+//TODO: (onCreateView) - Do not show make offer if already made an offer
+//TODO: (onBackPressed) - Implement on Back Pressed then go to fragment
+//TODO: (Delete Product) - Alert dialog and close fragment
 public class ProductDetailsFragment extends Fragment {
 
     //region Attributes
+    String content;
     int productId, userId;
     boolean isMyProduct;
     View mView, mDetails;
@@ -50,6 +57,9 @@ public class ProductDetailsFragment extends Fragment {
 
     Product product;
     Deal deal;
+
+    ApiServices api = Api.getInstance().getApiServices();
+    Call<Result> call;
     //endregion
 
     @Override
@@ -97,8 +107,7 @@ public class ProductDetailsFragment extends Fragment {
 
     private void showProduct() {
         Utils.getUtils().showProgress(true, mProgress, mDetails);
-        ApiServices api = Api.getInstance().getApiServices();
-        Call<Result> call = api.getProduct(productId);
+        call = api.getProduct(productId);
         call.enqueue(new Callback<Result>() {
             @Override
             public void onResponse(@Nullable Call<Result> call, @NonNull final Response<Result> response) {
@@ -122,9 +131,8 @@ public class ProductDetailsFragment extends Fragment {
         });
     }
 
-    //TODO: (Message Alert) - Change specific content if possible.
     private void messageAlert() {
-        final String content = "I want to buy your product.";
+        content = "I want to buy your product.";
         AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
         EditText mMessage = new EditText (getActivity());
         mMessage.setHint("message");
@@ -133,7 +141,6 @@ public class ProductDetailsFragment extends Fragment {
         alert.setView(mMessage);
         alert.setPositiveButton("Send", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                deal = new Deal(productId, userId, content);
                 sendDeal();
                 dialog.dismiss();
             }
@@ -145,7 +152,33 @@ public class ProductDetailsFragment extends Fragment {
         alert.show();
     }
 
-    //TODO: (Delete Product) - Alert dialog and close fragment
+    private void sendDeal() {
+        pDialog = Utils.showProgressDialog(getActivity(), "Sending a deal...");
+        call = api.postDeal(productId, userId, content);
+        call.enqueue(new Callback<Result>() {
+            @Override
+            public void onResponse(@Nullable Call<Result> call, @NonNull final Response<Result> response) {
+                try {
+                    Utils.getUtils().showProgress(false, mProgress, mDetails);
+                    if (response.errorBody() != null)
+                        throw new Exception(response.errorBody().string());
+                    if (response.body().getError())
+                        throw new Exception(response.body().getMessage());
+                    Utils.dismissProgressDialog(pDialog);
+                    Utils.switchContent(getActivity(), R.id.fragContainer, Tags.HOME_FRAGMENT);
+                    Toast.makeText(getActivity(), "Message sent", Toast.LENGTH_LONG).show();
+                } catch (Exception ex) {
+                    handleError(ex.getMessage());
+                }
+            }
+
+            @Override
+            public void onFailure(@Nullable Call<Result> call, @NonNull Throwable t) {
+                handleError("Api Failure: " + t.getMessage());
+            }
+        });
+    }
+
     private void deleteProduct() {
         pDialog = Utils.showProgressDialog(getActivity(), "Deleting product...");
         ApiServices api = Api.getInstance().getApiServices();
@@ -160,33 +193,6 @@ public class ProductDetailsFragment extends Fragment {
                     if (response.body().getError())
                         throw new Exception(response.body().getMessage());
                     Toast.makeText(getActivity(), "Product has been deleted.", Toast.LENGTH_LONG).show();
-                } catch (Exception ex) {
-                    handleError(ex.getMessage());
-                }
-            }
-
-            @Override
-            public void onFailure(@Nullable Call<Result> call, @NonNull Throwable t) {
-                handleError("Api Failure: " + t.getMessage());
-            }
-        });
-    }
-
-    //TODO: (Send Deal) - Check if working
-    private void sendDeal() {
-        pDialog = Utils.showProgressDialog(getActivity(), "Sending a deal...");
-        ApiServices api = Api.getInstance().getApiServices();
-        Call<Result> call = api.postDeal(deal);
-        call.enqueue(new Callback<Result>() {
-            @Override
-            public void onResponse(@Nullable Call<Result> call, @NonNull final Response<Result> response) {
-                try {
-                    Utils.getUtils().showProgress(false, mProgress, mDetails);
-                    if (response.errorBody() != null)
-                        throw new Exception(response.errorBody().string());
-                    if (response.body().getError())
-                        throw new Exception(response.body().getMessage());
-                    Toast.makeText(getActivity(), "Message sent", Toast.LENGTH_LONG).show();
                 } catch (Exception ex) {
                     handleError(ex.getMessage());
                 }

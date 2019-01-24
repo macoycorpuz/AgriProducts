@@ -36,6 +36,6 @@
     <dimen name="detail_font_size">11sp</dimen>
 
     <!-- Height -->
-    <dimen name="image_height">200dp</dimen>
+    <dimen name="image_height">240dp</dimen>
 
 </resources>

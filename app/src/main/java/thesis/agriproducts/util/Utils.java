@@ -26,6 +26,7 @@ import android.widget.LinearLayout;
 
 import thesis.agriproducts.AppController;
 import thesis.agriproducts.view.fragment.AccountFragment;
+import thesis.agriproducts.view.fragment.AdminFragment;
 import thesis.agriproducts.view.fragment.HomeFragment;
 import thesis.agriproducts.view.fragment.InboxFragment;
 import thesis.agriproducts.view.fragment.MyProductsFragment;
@@ -36,6 +37,8 @@ import thesis.agriproducts.view.fragment.SellFragment;
 public class Utils {
 
     private static int productId = 0;
+    private static int dealId = 0;
+    private static int userId = 0;
     private static boolean isMyProduct = false;
     private static String CURRENT_TAG = null;
     private static Utils utils;
@@ -180,8 +183,25 @@ public class Utils {
         }
     }
 
+    public static void switchContentAdmin(FragmentActivity baseActivity, int id, String TAG) {
+        Fragment adminFragment = new AdminFragment();
+        FragmentManager fragmentManager = baseActivity.getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        ((AdminFragment) adminFragment).setTag(TAG);
+        transaction.replace(id, adminFragment, TAG);
+        transaction.commit();
+    }
+
     public static void setProductId(int productId) {
         Utils.productId = productId;
+    }
+
+    public static void setDealId(int dealId) {
+        Utils.dealId = dealId;
+    }
+
+    public static void setUserId(int userId) {
+        Utils.userId = userId;
     }
 
     public static void setIsMyProduct(boolean isMyProduct) {Utils.isMyProduct = isMyProduct; }

@@ -11,30 +11,21 @@ public class Deal {
     private int buyerId;
     @SerializedName("time")
     private String time;
-    @SerializedName("content")
-    private String content;
+    @SerializedName("productUrl")
+    private String productUrl;
+    @SerializedName("productName")
+    private String productName;
+    @SerializedName("name")
+    private String name;
 
-    public Deal(int dealId, int productId, int buyerId, String time, String content) {
+    public Deal(int dealId, int productId, int buyerId, String time, String productUrl, String productName, String name) {
         this.dealId = dealId;
         this.productId = productId;
         this.buyerId = buyerId;
         this.time = time;
-        this.content = content;
-    }
-
-    public Deal(int productId, int buyerId, String content) {
-        this.productId = productId;
-        this.buyerId = buyerId;
-        this.time = time;
-        this.content = content;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
+        this.productUrl = productUrl;
+        this.productName = productName;
+        this.name = name;
     }
 
     public int getDealId() {
@@ -67,5 +58,29 @@ public class Deal {
 
     public void setTime(String time) {
         this.time = time;
+    }
+
+    public String getProductUrl() {
+        return productUrl;
+    }
+
+    public void setProductUrl(String productUrl) {
+        this.productUrl = productUrl;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

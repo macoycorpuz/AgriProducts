@@ -8,34 +8,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
+import com.squareup.picasso.Picasso;
 import java.util.List;
-
 import thesis.agriproducts.R;
 import thesis.agriproducts.model.entities.Deal;
 
 public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.InboxViewHolder> {
 
-    class InboxViewHolder extends RecyclerView.ViewHolder {
-
-        TextView txtSender, txtProduct;
-        ImageView imgInboxThumb;
-
-        private InboxViewHolder(View itemView) {
-            super(itemView);
-
-            txtSender = itemView.findViewById(R.id.txtInboxSender);
-            txtProduct = itemView.findViewById(R.id.txtInboxProduct);
-            imgInboxThumb = itemView.findViewById(R.id.imgInboxThumb);
-        }
-    }
-
     private Context mCtx;
-    private List<Deal> inboxList;
+    private List<Deal> dealList;
+    private static OnItemClickListener clickListener;
 
-    public InboxAdapter(Context mCtx, List<Deal> inboxList) {
+    public InboxAdapter(Context mCtx, List<Deal> dealList) {
         this.mCtx = mCtx;
-        this.inboxList = inboxList;
+        this.dealList = dealList;
     }
 
     @NonNull
@@ -48,18 +34,46 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.InboxViewHol
 
     @Override
     public void onBindViewHolder(@NonNull InboxAdapter.InboxViewHolder holder, int position) {
-        Deal inbox = inboxList.get(position);
-
-//        holder.txtSender.setText(inbox.getSenderName());
-//        holder.txtProduct.setText(inbox.getProductName());
-
-        holder.imgInboxThumb.setImageDrawable(mCtx.getResources().getDrawable(R.drawable.ic_home_black_24dp));
+        Deal deal = dealList.get(position);
+        holder.txtSender.setText(deal.getName());
+        holder.txtProduct.setText(deal.getProductName());
+        Picasso.get()
+                .load(deal.getProductUrl())
+                .placeholder(R.drawable.ic_photo_light_blue_24dp)
+                .error(R.drawable.ic_error_outline_red_24dp)
+                .into(holder.imgInboxThumb);
     }
 
 
     @Override
     public int getItemCount() {
-        return inboxList.size();
+        return dealList.size();
+    }
+
+    public void setOnItemClickListener(InboxAdapter.OnItemClickListener clickListener) {
+        InboxAdapter.clickListener = clickListener;
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(View view, int position);
+    }
+
+    class InboxViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+
+        TextView txtSender, txtProduct;
+        ImageView imgInboxThumb;
+
+        private InboxViewHolder(View itemView) {
+            super(itemView);
+            txtSender = itemView.findViewById(R.id.txtInboxSender);
+            txtProduct = itemView.findViewById(R.id.txtInboxProduct);
+            imgInboxThumb = itemView.findViewById(R.id.imgInboxThumb);
+        }
+
+        @Override
+        public void onClick(View v) {
+            clickListener.onItemClick(v, getAdapterPosition());
+        }
     }
 
 }

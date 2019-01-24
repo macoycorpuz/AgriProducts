@@ -24,7 +24,6 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
             android:gravity="center"
             android:orientation="vertical">
 
@@ -34,11 +33,11 @@
                 android:layout_height="@dimen/image_height"
                 android:layout_marginBottom="@dimen/fragment_vertical_margin"
                 android:contentDescription="@string/prompt_product_image"
-                android:src="@drawable/ic_add_a_photo_black_24dp"
-                android:background="@color/colorBlack"
+                android:src="@drawable/ic_add_a_photo_black_70dp"
+                android:background="@android:color/darker_gray"
                 android:clickable="true"
                 android:focusable="true"
-                android:scaleType="center"/>
+                android:scaleType="centerInside"/>
 
             <TextView
                 android:id="@+id/txtSellError"

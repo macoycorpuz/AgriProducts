@@ -29,14 +29,14 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
 
     @NonNull
     @Override
-    public MessagesAdapter.MessagesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public MessagesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(mCtx);
         View view = (viewType == SELF) ? inflater.inflate(R.layout.item_receiver, null) : inflater.inflate(R.layout.item_sender, null);
-        return new MessagesAdapter.MessagesViewHolder(view);
+        return new MessagesViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MessagesAdapter.MessagesViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull MessagesViewHolder holder, int position) {
         Message message = messageList.get(position);
         holder.txtViewMessage.setText(message.getContent());
         holder.txtViewTime.setText(message.getTime());

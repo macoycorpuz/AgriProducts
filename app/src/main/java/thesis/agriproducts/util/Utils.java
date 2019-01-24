@@ -178,7 +178,7 @@ public class Utils {
                     ((ProductDetailsFragment) fragmentToReplace).setProductId(productId);
                     ((ProductDetailsFragment) fragmentToReplace).setIsMyProduct(isMyProduct);
                 } else if (TAG.equals(Tags.MESSAGES_FRAGMENT)) {
-                    fragmentToReplace = new MessagesFragment();
+                    fragmentToReplace = (MessagesFragment) fragment;
                     ((MessagesFragment) fragmentToReplace).setDealId(dealId);
                 }
             }

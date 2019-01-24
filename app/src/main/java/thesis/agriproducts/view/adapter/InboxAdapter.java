@@ -26,14 +26,14 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.InboxViewHol
 
     @NonNull
     @Override
-    public InboxAdapter.InboxViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public InboxViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(mCtx);
         View view = inflater.inflate(R.layout.item_inbox, null);
         return new InboxAdapter.InboxViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull InboxAdapter.InboxViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull InboxViewHolder holder, int position) {
         Deal deal = dealList.get(position);
         holder.txtSender.setText(deal.getName());
         holder.txtProduct.setText(deal.getProductName());
@@ -44,13 +44,12 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.InboxViewHol
                 .into(holder.imgInboxThumb);
     }
 
-
     @Override
     public int getItemCount() {
         return dealList.size();
     }
 
-    public void setOnItemClickListener(InboxAdapter.OnItemClickListener clickListener) {
+    public void setOnItemClickListener(OnItemClickListener clickListener) {
         InboxAdapter.clickListener = clickListener;
     }
 
@@ -65,6 +64,7 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.InboxViewHol
 
         private InboxViewHolder(View itemView) {
             super(itemView);
+            itemView.setOnClickListener(this);
             txtSender = itemView.findViewById(R.id.txtInboxSender);
             txtProduct = itemView.findViewById(R.id.txtInboxProduct);
             imgInboxThumb = itemView.findViewById(R.id.imgInboxThumb);

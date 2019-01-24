@@ -58,7 +58,7 @@ public class MessagesFragment extends Fragment {
         layoutManager = new LinearLayoutManager(getActivity());
         userId = SharedPrefManager.getInstance().getUser(getActivity()).getUserId();
 
-        mView = inflater.inflate(R.layout.fragment_inbox, container, false);
+        mView = inflater.inflate(R.layout.fragment_chat_room, container, false);
         mProgress = mView.findViewById(R.id.progMessages);
         mErrorView = mView.findViewById(R.id.txtMessagesError);
         mMessage = mView.findViewById(R.id.txtMessage);

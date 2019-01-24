@@ -82,7 +82,7 @@ $app->post('/register', function (Request $request, Response $response) {
 $app->get('/products/{userId}', function (Request $request, Response $response) {
     $userId = $request->getAttribute('userId');
     $db = new DbOperation();
-    $products = $db->getAllProducts($userId);
+    $products = $db->getProducts($userId);
     $responseData = array();
     if($products != []) {
         $responseData['error'] = false;
@@ -290,6 +290,21 @@ $app->get('/users', function (Request $request, Response $response) {
     $users = $db->getAllUsers();
     if($users != []) $response->getBody()->write(json_encode(array("users" => $users)));
     else $response->getBody()->write(json_encode(array("error" => true, "message" => "No users found")));
+});
+
+//getting all products
+$app->get('/products', function (Request $request, Response $response) {
+    $db = new DbOperation();
+    $products = $db->getAllProducts();
+    $responseData = array();
+    if($products != []) {
+        $responseData['error'] = false;
+        $responseData['products'] = $products;
+    } else {
+        $responseData['error'] = true;
+        $responseData['message'] = 'No product/s found';
+    }
+    $response->getBody()->write(json_encode($responseData)); 
 });
 
 //function to check parameters

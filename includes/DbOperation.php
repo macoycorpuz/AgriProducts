@@ -38,8 +38,8 @@ class DbOperation
         return USER_EXIST;
     }
 
-    //Method to get all products
-    function getAllProducts($userId)
+    //Method to get products
+    function getProducts($userId)
     {
         $sql = "SELECT p.*, u.name FROM products AS p INNER JOIN users AS u ON p.sellerId = u.userId WHERE NOT p.sellerId = $userId ORDER BY p.productId DESC";
         $stmt = $this->con->query($sql);
@@ -180,13 +180,47 @@ class DbOperation
     //Method to get all users
     function getAllUsers()
     {
-        $stmt = $this->con->query("SELECT userId, name, email, number, address FROM users") or die($this->con->error);
+        $stmt = $this->con->query("SELECT userId, name, email, number, address FROM users");
         
         $users = array();
         while($row = $stmt->fetch_assoc()){
             array_push($users, $row);
         }
         return $users;
+    }
+
+    //Method to get all products
+    function getAllProducts()
+    {
+        $sql = "SELECT p.*, u.name FROM products AS p INNER JOIN users AS u ON p.sellerId = u.userId ORDER BY p.productId DESC";
+        $stmt = $this->con->query($sql);
+        $products = array();
+        while($row = $stmt->fetch_assoc()){
+            array_push($products, $row);
+        }
+        return $products;
+    }
+
+    function deleteUser($userId) 
+    {
+        $sql = "DELETE FROM messages WHERE dealId IN 
+        (SELECT dealId FROM deals WHERE productId IN 
+        (SELECT productId FROM products WHERE sellerId = $userId));";
+        $sql .= "DELETE FROM deals WHERE productId IN (SELECT productId FROM products WHERE sellerId = $userId);";
+        $sql .= "DELETE FROM deals WHERE buyerId = $userId";
+        $sql .= "DELETE FROM products WHERE sellerId = $userId;";
+        $sql .= "DELETE FROM users WHERE userId = $userId;";
+        // $stmt = $this->con->query($sql);
+        return mysqli_multi_query($this->con, $sql);
+    }
+
+    function deleteProduct($productId) 
+    {
+        $sql = "DELETE FROM messages WHERE dealId IN (SELECT dealId FROM deals WHERE productId = $productId);";
+        $sql .= "DELETE FROM deals WHERE productId = $productId;";
+        $sql .= "DELETE FROM products WHERE productId = $productId;";
+        // $stmt = $this->con->query($sql);
+        return mysqli_multi_query($this->con, $sql); 
     }
 
     //Method to check if email already exist

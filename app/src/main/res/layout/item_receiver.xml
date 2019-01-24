@@ -9,7 +9,7 @@
     android:padding="@dimen/message_padding"
     android:layout_gravity="end">
     <TextView
-        android:id="@+id/textViewMessage"
+        android:id="@+id/txtViewMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/prompt_content"
@@ -17,7 +17,7 @@
         android:textColor="@color/colorBlack"
         android:layout_gravity="end"/>
     <TextView
-        android:id="@+id/textViewTime"
+        android:id="@+id/txtViewTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/prompt_details"

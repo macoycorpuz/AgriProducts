@@ -119,7 +119,8 @@ public class InboxFragment extends Fragment {
         mAdapter.setOnItemClickListener(new InboxAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                //TODO: Go to Messages
+                Utils.setDealId(dealList.get(position).getDealId());
+                Utils.switchContent(getActivity(), R.id.fragContainer, Tags.MESSAGES_FRAGMENT);
             }
         });
 

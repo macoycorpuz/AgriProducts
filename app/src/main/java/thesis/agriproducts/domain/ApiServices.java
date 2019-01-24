@@ -72,8 +72,9 @@ public interface ApiServices {
     @GET("messages/dealId/{dealId}/userId/{userId}")
     Call<Result> getMessages(@Path("dealId") int dealId, @Path("userId") int userId);
 
+    @FormUrlEncoded
     @POST("messages/new")
-    Call<Result> sendMessage(@Body Message message);
+    Call<Result> sendMessage(@Field("dealId") int dealId, @Field("userId") int userId, @Field("content") String content);
     //endregion
 
     //region My Products

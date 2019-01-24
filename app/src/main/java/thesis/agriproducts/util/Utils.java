@@ -29,6 +29,7 @@ import thesis.agriproducts.view.fragment.AccountFragment;
 import thesis.agriproducts.view.fragment.AdminFragment;
 import thesis.agriproducts.view.fragment.HomeFragment;
 import thesis.agriproducts.view.fragment.InboxFragment;
+import thesis.agriproducts.view.fragment.MessagesFragment;
 import thesis.agriproducts.view.fragment.MyProductsFragment;
 import thesis.agriproducts.view.fragment.ProductDetailsFragment;
 import thesis.agriproducts.view.fragment.SellFragment;
@@ -157,6 +158,9 @@ public class Utils {
                     fragmentToReplace = new ProductDetailsFragment();
                     ((ProductDetailsFragment) fragmentToReplace).setProductId(productId);
                     ((ProductDetailsFragment) fragmentToReplace).setIsMyProduct(isMyProduct);
+                } else if (TAG.equals(Tags.MESSAGES_FRAGMENT)) {
+                    fragmentToReplace = new MessagesFragment();
+                    ((MessagesFragment) fragmentToReplace).setDealId(dealId);
                 }
             } else {
                 if (TAG.equals(Tags.HOME_FRAGMENT)) {
@@ -173,6 +177,9 @@ public class Utils {
                     fragmentToReplace = (ProductDetailsFragment) fragment;
                     ((ProductDetailsFragment) fragmentToReplace).setProductId(productId);
                     ((ProductDetailsFragment) fragmentToReplace).setIsMyProduct(isMyProduct);
+                } else if (TAG.equals(Tags.MESSAGES_FRAGMENT)) {
+                    fragmentToReplace = new MessagesFragment();
+                    ((MessagesFragment) fragmentToReplace).setDealId(dealId);
                 }
             }
 

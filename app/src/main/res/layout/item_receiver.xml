@@ -1,27 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="#91d49a"
-    android:layout_width="wrap_content"
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:layout_margin="@dimen/message_margin"
-    android:padding="@dimen/message_padding"
-    android:layout_gravity="end">
-    <TextView
-        android:id="@+id/txtViewMessage"
+    android:orientation="vertical">
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/prompt_content"
-        android:textSize="@dimen/content_font_size"
-        android:textColor="@color/colorBlack"
-        android:layout_gravity="end"/>
-    <TextView
-        android:id="@+id/txtViewTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/prompt_details"
-        android:textSize="@dimen/detail_font_size"
-        android:textColor="@color/colorBlack"
-        android:layout_gravity="end"/>
+        android:layout_margin="@dimen/message_margin"
+        android:layout_gravity="end"
+        android:background="#91d49a">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/message_padding"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/txtViewMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:text="@string/prompt_content"
+                android:textSize="@dimen/content_font_size"
+                android:textColor="@color/colorBlack"/>
+            <TextView
+                android:id="@+id/txtViewTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:text="@string/prompt_details"
+                android:textSize="@dimen/detail_font_size"
+                android:textColor="@color/colorBlack"/>
+        </LinearLayout>
+    </LinearLayout>
 </LinearLayout>

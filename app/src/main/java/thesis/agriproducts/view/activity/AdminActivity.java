@@ -16,6 +16,8 @@ public class AdminActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin);
+
+        Utils.switchContentAdmin(AdminActivity.this, R.id.adminContainer, Tags.USERS_FRAGMENT);
         BottomNavigationView navigation = findViewById(R.id.adminNavigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);

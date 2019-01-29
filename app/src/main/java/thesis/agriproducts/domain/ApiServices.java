@@ -8,17 +8,14 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
-import retrofit2.http.Body;
 import retrofit2.http.Multipart;
 import retrofit2.http.DELETE;
-import thesis.agriproducts.model.entities.Message;
 import thesis.agriproducts.model.entities.Result;
-import thesis.agriproducts.model.entities.Deal;
 
 public interface ApiServices {
 
 //    String MAIN_URL = "http://agriproducts.000webhostapp.com/public/";
-    String MAIN_URL = "http://192.168.1.6/AgriProducts/public/";
+    String MAIN_URL = "http://192.168.1.7/AgriProducts/public/";
 
     //region Login and Sign Up
     @FormUrlEncoded

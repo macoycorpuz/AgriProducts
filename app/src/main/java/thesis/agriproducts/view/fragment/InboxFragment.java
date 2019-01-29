@@ -120,6 +120,7 @@ public class InboxFragment extends Fragment {
             @Override
             public void onItemClick(View view, int position) {
                 Utils.setDealId(dealList.get(position).getDealId());
+                Utils.setProductId(dealList.get(position).getProductId());
                 Utils.switchContent(getActivity(), R.id.fragContainer, Tags.MESSAGES_FRAGMENT);
             }
         });

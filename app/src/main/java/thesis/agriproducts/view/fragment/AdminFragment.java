@@ -19,6 +19,7 @@ import thesis.agriproducts.model.entities.User;
 import thesis.agriproducts.util.Tags;
 import thesis.agriproducts.util.Utils;
 import thesis.agriproducts.view.adapter.ProductAdapter;
+import thesis.agriproducts.view.adapter.UserAdapter;
 
 public class AdminFragment extends Fragment {
 
@@ -31,7 +32,7 @@ public class AdminFragment extends Fragment {
     SwipeRefreshLayout mSwipeRefreshLayout;
 
     ProductAdapter mProductAdapter;
-//    UsersAdapter mUserAdapter;
+    UserAdapter mUserAdapter;
     List<Product> productList;
     List<User> userList;
     //endregion
@@ -65,9 +66,11 @@ public class AdminFragment extends Fragment {
         switch (CURRENT_TAG) {
             case Tags.USERS_FRAGMENT:
                 mTitle.setText(Tags.USERS_FRAGMENT);
+                showUsers();
                 break;
             case Tags.PRODUCTS_FRAGMENT:
                 mTitle.setText(Tags.PRODUCTS_FRAGMENT);
+                showProducts();
                 break;
         }
     }
@@ -76,29 +79,33 @@ public class AdminFragment extends Fragment {
 
     }
 
-//    private void fillProducts() {
-//        mProductAdapter = new ProductAdapter(getActivity(), productList);
-//        mProductAdapter.setOnItemClickListener(new ProductAdapter.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(View view, int position) {
+    private void showUsers() {
+
+    }
+
+    private void fillProducts() {
+        mProductAdapter = new ProductAdapter(getActivity(), productList);
+        mProductAdapter.setOnItemClickListener(new ProductAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
 //                Utils.setProductId(productList.get(position).getProductId());
 //                Utils.switchContent(getActivity(), R.id.adminContainer, Tags.PRODUCT_DETAILS_FRAGMENT);
-//            }
-//        });
-//        mRecyclerView.setAdapter(mProductAdapter);
-//    }
-//
-//    private void fillUsers() {
-//        mUserAdapter = new ProductAdapter(getActivity(), productList);
-//        mUserAdapter.setOnItemClickListener(new ProductAdapter.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(View view, int position) {
-//                Utils.setProductId(productList.get(position).getProductId());
+            }
+        });
+        mRecyclerView.setAdapter(mProductAdapter);
+    }
+
+    private void fillUsers() {
+        mUserAdapter = new UserAdapter(getActivity(), userList);
+        mUserAdapter.setOnItemClickListener(new UserAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+//                Utils.setProductId(userList.get(position).getUserId());
 //                Utils.switchContent(getActivity(), R.id.adminContainer, Tags.PRODUCT_DETAILS_FRAGMENT);
-//            }
-//        });
-//        mRecyclerView.setAdapter(mUserAdapter);
-//    }
+            }
+        });
+        mRecyclerView.setAdapter(mUserAdapter);
+    }
 
     private void handleError(String error) {
         Utils.getUtils().showProgress(false, mProgress, mRecyclerView);

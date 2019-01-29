@@ -161,6 +161,7 @@ public class Utils {
                 } else if (TAG.equals(Tags.MESSAGES_FRAGMENT)) {
                     fragmentToReplace = new MessagesFragment();
                     ((MessagesFragment) fragmentToReplace).setDealId(dealId);
+                    ((MessagesFragment) fragmentToReplace).setProductId(productId);
                 }
             } else {
                 if (TAG.equals(Tags.HOME_FRAGMENT)) {
@@ -180,6 +181,7 @@ public class Utils {
                 } else if (TAG.equals(Tags.MESSAGES_FRAGMENT)) {
                     fragmentToReplace = (MessagesFragment) fragment;
                     ((MessagesFragment) fragmentToReplace).setDealId(dealId);
+                    ((MessagesFragment) fragmentToReplace).setProductId(productId);
                 }
             }
 

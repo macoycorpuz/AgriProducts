@@ -30,6 +30,12 @@ public class Message {
         this.time = time;
     }
 
+    public Message(int dealId, int userId, String content) {
+        this.dealId = dealId;
+        this.userId = userId;
+        this.content = content;
+    }
+
     public int getMessageId() {
         return messageId;
     }

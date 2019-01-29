@@ -1,6 +1,5 @@
-delete from products;
-/* select * from users; */
-/* select * from admin;
-/* select * from deals; */
+select * from users;
 select * from products;
-/* select * from messages; */
+select * from admin;
+select * from deals;
+select * from messages;

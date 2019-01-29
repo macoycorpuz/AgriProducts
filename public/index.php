@@ -18,7 +18,7 @@ $container = $app->getContainer();
 $container['users_directory'] = __DIR__ . '/../images/users/';
 $container['products_directory'] = __DIR__ . '/../images/products/';
 
-//user login route
+//region Users
 $app->post('/login', function (Request $request, Response $response) {
     if (isTheseParametersAvailable(array('email', 'password'))) {
         $requestData = $request->getParsedBody();
@@ -40,8 +40,6 @@ $app->post('/login', function (Request $request, Response $response) {
         $response->getBody()->write(json_encode($responseData));
     }
 });
-
-//registering a new user
 $app->post('/register', function (Request $request, Response $response) {
     if (isTheseParametersAvailable(array('name', 'email', 'password', 'number', 'address'))) {
         $requestData = $request->getParsedBody();
@@ -77,12 +75,38 @@ $app->post('/register', function (Request $request, Response $response) {
         $response->getBody()->write(json_encode($responseData));   
     }
 });
-
-//getting all products
-$app->get('/products/{userId}', function (Request $request, Response $response) {
-    $userId = $request->getAttribute('userId');
+$app->get('/users', function (Request $request, Response $response) {
     $db = new DbOperation();
-    $products = $db->getProducts($userId);
+    $users = $db->getAllUsers();
+    if($users != []) $response->getBody()->write(json_encode(array("users" => $users)));
+    else $response->getBody()->write(json_encode(array("error" => true, "message" => "No users found")));
+});
+$app->post('/users/change/password', function (Request $request, Response $response) {
+    if (isTheseParametersAvailable(array('userId', 'oldPassword', 'newPassword'))) {
+        $requestData = $request->getParsedBody();
+        $userId = $requestData['userId'];
+        $oldPassword = $requestData['oldPassword'];
+        $newPassword = $requestData['newPassword'];
+        $db = new DbOperation();
+        $responseData = array();
+
+        $result = $db->changePassword($userId, $oldPassword, $newPassword);
+        if ($result) {
+            $responseData['error'] = false;
+            $responseData['message'] = 'Password has been changed.';
+        } else{
+            $responseData['error'] = true;
+            $responseData['message'] = 'Incorrect password.';
+        } 
+        $response->getBody()->write(json_encode($responseData));   
+    }
+});
+//endregion
+
+//region Products
+$app->get('/products', function (Request $request, Response $response) {
+    $db = new DbOperation();
+    $products = $db->getAllProducts();
     $responseData = array();
     if($products != []) {
         $responseData['error'] = false;
@@ -93,25 +117,7 @@ $app->get('/products/{userId}', function (Request $request, Response $response) 
     }
     $response->getBody()->write(json_encode($responseData)); 
 });
-
-//getting product by name
-$app->get('/productName/{productName}', function (Request $request, Response $response) {
-    $productName = $request->getAttribute('productName');
-    $db = new DbOperation();
-    $products = $db->getProductbyName($productName);
-    $responseData = array();
-    if($products != []) {
-        $responseData['error'] = false;
-        $responseData['products'] = $products;
-    } else {
-        $responseData['error'] = true;
-        $responseData['message'] = 'No product/s found';
-    }
-    $response->getBody()->write(json_encode($responseData)); 
-});
-
-//post product
-$app->post('/product', function (Request $request, Response $response) {
+$app->post('/products/new', function (Request $request, Response $response) {
     if (isTheseParametersAvailable(array('sellerId', 'productName', 'description', 'quantity', 'price', 'location', 'lat', 'lng'))) {
         $requestData = $request->getParsedBody();
         $sellerId = $requestData['sellerId'];
@@ -148,10 +154,8 @@ $app->post('/product', function (Request $request, Response $response) {
         $response->getBody()->write(json_encode($responseData));
     }
 });
-
-//getting product by id
-$app->get('/product/{id}', function (Request $request, Response $response)  {
-    $productId = $request->getAttribute('id');
+$app->get('/products/productId/{productId}', function (Request $request, Response $response)  {
+    $productId = $request->getAttribute('productId');
     $db = new DbOperation();
     $product = $db->getProductbyId($productId);
     $responseData = array();
@@ -164,36 +168,59 @@ $app->get('/product/{id}', function (Request $request, Response $response)  {
     }
     $response->getBody()->write(json_encode($responseData)); 
 });
-
-//getting product by id
-$app->delete('/product/{id}', function (Request $request, Response $response) {
-    $productId = $request->getAttribute('id');
+$app->get('/products/userId/{userId}', function (Request $request, Response $response) {
+    $userId = $request->getAttribute('userId');
+    $db = new DbOperation();
+    $products = $db->getProducts($userId);
+    $responseData = array();
+    if($products != []) {
+        $responseData['error'] = false;
+        $responseData['products'] = $products;
+    } else {
+        $responseData['error'] = true;
+        $responseData['message'] = 'No product/s found';
+    }
+    $response->getBody()->write(json_encode($responseData)); 
+});
+$app->get('/products/productName/{productName}', function (Request $request, Response $response) {
+    $productName = $request->getAttribute('productName');
+    $db = new DbOperation();
+    $products = $db->getProductbyName($productName);
+    $responseData = array();
+    if($products != []) {
+        $responseData['error'] = false;
+        $responseData['products'] = $products;
+    } else {
+        $responseData['error'] = true;
+        $responseData['message'] = 'No product/s found';
+    }
+    $response->getBody()->write(json_encode($responseData)); 
+});
+$app->get('/products/sellerId/{sellerId}', function (Request $request, Response $response) {
+    $sellerId = $request->getAttribute('sellerId');
+    $db = new DbOperation();
+    $products = $db->getMyProducts($sellerId);
+    $responseData = array();
+    if($products != []) {
+        $responseData['error'] = false;
+        $responseData['products'] = $products;
+    } else {
+        $responseData['error'] = true;
+        $responseData['message'] = 'No product/s found';
+    }
+    $response->getBody()->write(json_encode($responseData)); 
+});
+$app->delete('/products/delete/{productId}', function (Request $request, Response $response) {
+    $productId = $request->getAttribute('productId');
     $db = new DbOperation();
     $product = $db->getProductbyId($productId);
     if(isset($product)) $response->getBody()->write(json_encode(array("product" => $product)));
     else $response->getBody()->write(json_encode(array("error" => true, "message" => "Product not found")));
 });
+//endregion
 
-//getting selling deals
-$app->get('/selling/{userId}', function (Request $request, Response $response) {
-    $deals = $request->getAttribute('userId');
-    $db = new DbOperation();
-    $deals = $db->getSelling($userid);
-    if(isset($deals)) $response->getBody()->write(json_encode(array("deals" => $deals)));
-    else $response->getBody()->write(json_encode(array("error" => true, "message" => "No deals found")));
-});
-
-//getting buying
-$app->get('/buying/{userId}', function (Request $request, Response $response) {
-    $deals = $request->getAttribute('userId');
-    $db = new DbOperation();
-    $deals = $db->getBuying($userid);
-    if(isset($deals)) $response->getBody()->write(json_encode(array("deals" => $deals)));
-    else $response->getBody()->write(json_encode(array("error" => true, "message" => "No deals found")));
-});
-
-//sending message to user
-$app->post('/deal', function (Request $request, Response $response) {
+//region Deals
+$app->post('/deals/new', function (Request $request, Response $response) {
     if (isTheseParametersAvailable(array('productId', 'buyerId', 'content'))) {
         $requestData = $request->getParsedBody();
         $productId = $requestData['productId'];
@@ -204,7 +231,7 @@ $app->post('/deal', function (Request $request, Response $response) {
 
         $responseData = array();
 
-        if ($db->sendDeal($productId, $title, $content)) {
+        if ($db->sendDeal($productId, $buyerId, $content)) {
             $responseData['error'] = false;
             $responseData['message'] = 'Deal sent successfully';
         } else {
@@ -215,18 +242,53 @@ $app->post('/deal', function (Request $request, Response $response) {
         $response->getBody()->write(json_encode($responseData));
     }
 });
+$app->get('/deals/selling/{userId}', function (Request $request, Response $response) {
+    $userId = $request->getAttribute('userId');
+    $db = new DbOperation();
+    $deals = $db->getSelling($userId);
+    $responseData = array();
+    if($deals != []) {
+        $responseData['error'] = false;
+        $responseData['deals'] = $deals;
+    } else {
+        $responseData['error'] = true;
+        $responseData['message'] = 'No selling deals found';
+    }
+    $response->getBody()->write(json_encode($responseData)); 
+});
+$app->get('/deals/buying/{userId}', function (Request $request, Response $response) {
+    $userId = $request->getAttribute('userId');
+    $db = new DbOperation();
+    $deals = $db->getBuying($userId);
+    $responseData = array();
+    if($deals != []) {
+        $responseData['error'] = false;
+        $responseData['deals'] = $deals;
+    } else {
+        $responseData['error'] = true;
+        $responseData['message'] = 'No buying deals found';
+    }
+    $response->getBody()->write(json_encode($responseData)); 
+});
+//endregion
 
-//getting messages for a deal
-$app->get('/messages/{dealId}/{userId}', function (Request $request, Response $response) {
+//region Messages
+$app->get('/messages/dealId/{dealId}/userId/{userId}', function (Request $request, Response $response) {
     $dealId = $request->getAttribute('dealId');
     $userId = $request->getAttribute('userId');
     $db = new DbOperation();
-    $inbox = $db->getMessages($dealId, $userId);
-    $response->getBody()->write(json_encode(array("messages" => $inbox)));
+    $messages = $db->getMessages($dealId, $userId);
+    $responseData = array();
+    if($messages != []) {
+        $responseData['error'] = false;
+        $responseData['messages'] = $messages;
+    } else {
+        $responseData['error'] = true;
+        $responseData['message'] = 'No buying deals found';
+    }
+    $response->getBody()->write(json_encode($responseData));
 });
-
-//sending message to user
-$app->post('/message', function (Request $request, Response $response) {
+$app->post('/messages/new', function (Request $request, Response $response) {
     if (isTheseParametersAvailable(array('dealId', 'userId', 'content'))) {
         $requestData = $request->getParsedBody();
         $dealId = $requestData['dealId'];
@@ -245,69 +307,9 @@ $app->post('/message', function (Request $request, Response $response) {
         $response->getBody()->write(json_encode($responseData));
     }
 });
+//endregion
 
-//getting all products
-$app->get('/myproducts/{sellerId}', function (Request $request, Response $response) {
-    $sellerId = $request->getAttribute('sellerId');
-    $db = new DbOperation();
-    $products = $db->getMyProducts($sellerId);
-    $responseData = array();
-    if($products != []) {
-        $responseData['error'] = false;
-        $responseData['products'] = $products;
-    } else {
-        $responseData['error'] = true;
-        $responseData['message'] = 'No product/s found';
-    }
-    $response->getBody()->write(json_encode($responseData)); 
-});
-
-//change password
-$app->post('/changepassword', function (Request $request, Response $response) {
-    if (isTheseParametersAvailable(array('userId', 'oldPassword', 'newPassword'))) {
-        $requestData = $request->getParsedBody();
-        $userId = $requestData['userId'];
-        $oldPassword = $requestData['oldPassword'];
-        $newPassword = $requestData['newPassword'];
-        $db = new DbOperation();
-        $responseData = array();
-
-        $result = $db->changePassword($userId, $oldPassword, $newPassword);
-        if ($result) {
-            $responseData['error'] = false;
-            $responseData['message'] = 'Password has been changed.';
-        } else{
-            $responseData['error'] = true;
-            $responseData['message'] = 'Incorrect password.';
-        } 
-        $response->getBody()->write(json_encode($responseData));   
-    }
-});
-
-//getting all users
-$app->get('/users', function (Request $request, Response $response) {
-    $db = new DbOperation();
-    $users = $db->getAllUsers();
-    if($users != []) $response->getBody()->write(json_encode(array("users" => $users)));
-    else $response->getBody()->write(json_encode(array("error" => true, "message" => "No users found")));
-});
-
-//getting all products
-$app->get('/products', function (Request $request, Response $response) {
-    $db = new DbOperation();
-    $products = $db->getAllProducts();
-    $responseData = array();
-    if($products != []) {
-        $responseData['error'] = false;
-        $responseData['products'] = $products;
-    } else {
-        $responseData['error'] = true;
-        $responseData['message'] = 'No product/s found';
-    }
-    $response->getBody()->write(json_encode($responseData)); 
-});
-
-//function to check parameters
+//region Methods
 function isTheseParametersAvailable($required_fields)
 {
     $error = false;
@@ -339,10 +341,6 @@ function getFileName()
 
     return $filename;
 }
-
-function moveUploadedFile($directory, $filename, UploadedFile $uploadedFile)
-{
-    $uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename);
-}
+//endregion
 
 $app->run();

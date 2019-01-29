@@ -5,12 +5,16 @@ define('DB_PASSWORD', '');
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'dbagriproducts');
 
-define('USER_CREATED', 101);
-define('USER_EXIST', 102);
-define('USER_CREATION_FAILED', 103);
+define('ADMIN', 101);
+define('USER', 102);
+define('INVALID_USER', 103);
 
-define('PRODUCT_CREATED', 111);
-define('PRODUCT_CREATION_FAILED', 112);
+define('USER_CREATED', 111);
+define('USER_EXIST', 112);
+define('USER_CREATION_FAILED', 113);
+
+define('PRODUCT_CREATED', 121);
+define('PRODUCT_CREATION_FAILED', 122);
 
 // define('API_PATH', '/api-agriproducts');
 define('API_PATH', '/AgriProducts');

@@ -11,19 +11,22 @@ class DbOperation
         $this->con = $db->connect();
     }
 
-    //Method for user login
     function userLogin($email, $pass, &$user)
     {
         $password = md5($pass);
-        $stmt = $this->con->query("SELECT * FROM users WHERE email = '$email' AND password = '$password'");
-        $user = array();
-        while($row = $stmt->fetch_assoc()){
-            array_push($user, $row);
+        $stmt1 = $this->con->query("SELECT * FROM admin WHERE email = '$email' AND password = '$password'");
+        $stmt2 = $this->con->query("SELECT * FROM users WHERE email = '$email' AND password = '$password'");
+        if ($stmt1->num_rows > 0) {
+            $user =  $stmt1->fetch_assoc();
+            return ADMIN;
         }
-        return $stmt->num_rows > 0;
+        else if ($stmt2->num_rows > 0) {
+            $user =  $stmt2->fetch_assoc();
+            return USER;
+        }
+        return INVALID_USER;
     }
 
-    //Method to create a new user
     function registerUser($name, $email, $pass, $number, $address, $userFile, $isActivated)
     {
         if (!$this->isUserExist($email)) {
@@ -38,7 +41,6 @@ class DbOperation
         return USER_EXIST;
     }
 
-    //Method to get products
     function getProducts($userId)
     {
         $sql = "SELECT p.*, u.name FROM products AS p INNER JOIN users AS u ON p.sellerId = u.userId WHERE NOT p.sellerId = $userId ORDER BY p.productId DESC";
@@ -50,7 +52,6 @@ class DbOperation
         return $products;
     }
 
-    //Method to get product by name
     function getProductbyName($productName)
     {
         $sql = "SELECT p.*, u.name FROM products AS p INNER JOIN users AS u ON p.sellerId = u.userId WHERE productName LIKE '%$productName%'";
@@ -62,7 +63,6 @@ class DbOperation
         return $products;
     }
 
-    //Method to get all products
     function getProductbyId($productId)
     {
         $sql = "SELECT p.*, u.name FROM products AS p INNER JOIN users AS u ON p.sellerId = u.userId WHERE p.productId = $productId";
@@ -71,7 +71,6 @@ class DbOperation
         return $product;
     }
 
-    //Method to post a product
     function postProduct($sellerId, $prodName, $desc, $quantity, $price, $location, $lat, $lng, $prodFile)
     {
         $status = 'Available';
@@ -83,8 +82,6 @@ class DbOperation
             return PRODUCT_CREATED;
         return PRODUCT_CREATION_FAILED;
     }
-
-    //Method to get inbox of a particular user
 
     function getSelling($userId)
     {
@@ -115,7 +112,6 @@ class DbOperation
         return $buying;
     }
 
-    //Method to get messages of a particular deal
     function getMessages($dealId, $userId)
     {
         $sql = "SELECT m.* FROM messages AS m WHERE m.dealId = $dealId AND m.userId = $userId";
@@ -127,7 +123,6 @@ class DbOperation
         return $messages;
     }
 
-    //Method to send a deal
     function sendDeal($productId, $userId, $content)
     {
         $sql = "INSERT INTO deals (productId, buyerId, time) VALUES ($productId, $userId, NOW());";
@@ -135,7 +130,6 @@ class DbOperation
         return $this->con->multi_query($sql);
     }
 
-    //Method to send a message to another user
     function sendMessage($dealId, $userId, $content)
     {        
         $stmt = $this->con->prepare("INSERT INTO messages (dealId, userId, content, time) VALUES (?, ?, ?, NOW());");
@@ -168,7 +162,6 @@ class DbOperation
         return false;
     }
 
-    //Method to get all users
     function getAllUsers()
     {
         $stmt = $this->con->query("SELECT userId, name, email, number, address FROM users");
@@ -180,7 +173,6 @@ class DbOperation
         return $users;
     }
 
-    //Method to get all products
     function getAllProducts()
     {
         $sql = "SELECT p.*, u.name FROM products AS p INNER JOIN users AS u ON p.sellerId = u.userId ORDER BY p.productId DESC";
@@ -214,7 +206,6 @@ class DbOperation
         return mysqli_multi_query($this->con, $sql); 
     }
 
-    //Method to check if email already exist
     function isUserExist($email)
     {
         $stmt = $this->con->query("SELECT * FROM (SELECT email FROM users UNION SELECT email FROM admin) a WHERE email = '$email'") or die($this->con->error);

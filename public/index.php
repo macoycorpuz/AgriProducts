@@ -7,7 +7,6 @@ use \Slim\Http\UploadedFile;
 require '../vendor/autoload.php';
 require_once '../includes/DbOperation.php';
 
-//Creating a new app with the config to show errors
 $app = new \Slim\App([
     'settings' => [
         'displayErrorDetails' => true
@@ -24,15 +23,18 @@ $app->post('/login', function (Request $request, Response $response) {
         $requestData = $request->getParsedBody();
         $email = $requestData['email'];
         $password = $requestData['password'];
-
         $db = new DbOperation();
-
         $responseData = array();
-
-        if ($db->userLogin($email, $password, $user)) {
+        $result = $db->userLogin($email, $password, $user);
+        if ($result == ADMIN) {
             $responseData['error'] = false;
-            $responseData['user'] = $user[0];
-        } else {
+            $responseData['isAdmin'] = true;
+            $responseData['user'] = $user;
+        } else if ($result == USER) {
+            $responseData['error'] = false;
+            $responseData['isAdmin'] = false;
+            $responseData['user'] = $user;
+        } else if ($result == INVALID_USER) {
             $responseData['error'] = true;
             $responseData['message'] = 'Invalid email or password';
         }

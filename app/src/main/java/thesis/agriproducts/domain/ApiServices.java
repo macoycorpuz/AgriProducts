@@ -92,6 +92,15 @@ public interface ApiServices {
     @GET("users")
     Call<Result> getAllUsers();
 
+    @GET("users/userId/{userId}")
+    Call<Result> getUser(@Path("userId") int userId);
+
+    @GET("users/activate")
+    Call<Result> activate();
+
+    @DELETE("users/delete/{userId}")
+    Call<Result> deleteUser(@Path("userId") int userId);
+
     @GET("products")
     Call<Result> getAllProducts();
     //endregion

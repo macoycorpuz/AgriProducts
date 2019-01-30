@@ -33,6 +33,7 @@
     <string name="prompt_confirm_password">Confirm Password</string>
     <string name="prompt_mobile_number">Mobile Number</string>
     <string name="prompt_address">Complete Address</string>
+    <string name="prompt_activate">Activate</string>
     <string name="prompt_valid_id">Valid ID</string>
     <string name="action_upload">Upload Valid ID</string>
     <string name="action_sign_up">Sign Up</string>
@@ -73,6 +74,11 @@
     <!-- Strings realted to account -->
     <string name="action_change_password">Change Password</string>
     <string name="action_logout">Logout</string>
+
+    <!-- Strings related to admin -->
+    <string name="action_admin_add">Add Admin</string>
+    <string name="action_user_activate">Activate</string>
+    <string name="action_user_delete">Delete</string>
 
     <!-- Strings related to network errors -->
     <string name="error_network_timeout">Network Timeout</string>

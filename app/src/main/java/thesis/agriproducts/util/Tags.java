@@ -9,6 +9,7 @@ public interface Tags {
     String MY_PRODUCTS_FRAGMENT = "MyProductsFragment";
     String ACCOUNT_FRAGMENT = "AccountFragment";
     String PRODUCT_DETAILS_FRAGMENT = "ProductDetailsFragment";
+    String USER_DETAILS_FRAGMENT = "UserDetailsFragment";
 
     String USERS_FRAGMENT = "Users";
     String PRODUCTS_FRAGMENT = "Products";

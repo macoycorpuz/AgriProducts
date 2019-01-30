@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/imgUser"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/image_height"
+        android:scaleType="center" />
+
+    <TextView
+        android:id="@+id/txtUserError"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorError"
+        android:visibility="gone"
+        android:layout_marginTop="@dimen/error_vertical_margin"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight=".80"
+        android:paddingLeft="@dimen/fragment_horizontal_margin"
+        android:paddingRight="@dimen/fragment_horizontal_margin">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+
+            <TextView
+                android:id="@+id/txtUserDetailName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="5dp"
+                android:gravity="center_horizontal"
+                android:ellipsize="marquee"
+                android:freezesText="true"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:scrollHorizontally="true"
+                android:singleLine="true"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/background_dark"
+                android:text="@string/prompt_name"/>
+
+
+            <TextView
+                android:id="@+id/txtUserDetailActivate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/product_vertical_margin"
+                android:layout_marginBottom="@dimen/product_vertical_margin"
+                android:layout_marginStart="@dimen/product_horizontal_margin"
+                android:layout_marginEnd="@dimen/product_horizontal_margin"
+                android:singleLine="true"
+                android:textSize="16sp"
+                android:textColor="@android:color/background_dark"
+                android:text="@string/prompt_activate"/>
+
+            <TextView
+                android:id="@+id/txtUserDetailEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/product_vertical_margin"
+                android:layout_marginBottom="@dimen/product_vertical_margin"
+                android:layout_marginStart="@dimen/product_horizontal_margin"
+                android:layout_marginEnd="@dimen/product_horizontal_margin"
+                android:singleLine="true"
+                android:textSize="20sp"
+                android:textColor="@android:color/background_dark"
+                android:text="@string/prompt_email"/>
+
+            <TextView
+                android:id="@+id/txtUserDetailNumber"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/product_vertical_margin"
+                android:layout_marginBottom="@dimen/product_vertical_margin"
+                android:layout_marginStart="@dimen/product_horizontal_margin"
+                android:layout_marginEnd="@dimen/product_horizontal_margin"
+                android:singleLine="true"
+                android:textSize="16sp"
+                android:textColor="@android:color/background_dark"
+                android:text="@string/prompt_mobile_number"/>
+
+            <TextView
+                android:id="@+id/txtUserDetailAddress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/product_vertical_margin"
+                android:layout_marginBottom="@dimen/product_vertical_margin"
+                android:layout_marginStart="@dimen/product_horizontal_margin"
+                android:layout_marginEnd="@dimen/product_horizontal_margin"
+                android:singleLine="true"
+                android:textSize="16sp"
+                android:textColor="@android:color/background_dark"
+                android:text="@string/prompt_address"/>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/layoutProdButtons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight=".20"
+        android:layout_gravity="center"
+        android:layout_margin="5dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnActivateUser"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".50"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:textStyle="bold"
+            android:text="@string/action_user_activate"/>
+
+        <Button
+            android:id="@+id/btnDeleteUser"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".50"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:textStyle="bold"
+            android:text="@string/action_user_delete"/>
+    </LinearLayout>
+</LinearLayout>

@@ -33,6 +33,7 @@ import thesis.agriproducts.view.fragment.MessagesFragment;
 import thesis.agriproducts.view.fragment.MyProductsFragment;
 import thesis.agriproducts.view.fragment.ProductDetailsFragment;
 import thesis.agriproducts.view.fragment.SellFragment;
+import thesis.agriproducts.view.fragment.UserDetailsFragment;
 
 //Class for usable functions
 public class Utils {
@@ -162,6 +163,9 @@ public class Utils {
                     fragmentToReplace = new MessagesFragment();
                     ((MessagesFragment) fragmentToReplace).setDealId(dealId);
                     ((MessagesFragment) fragmentToReplace).setProductId(productId);
+                } else if (TAG.equals(Tags.USER_DETAILS_FRAGMENT)) {
+                    fragmentToReplace = new UserDetailsFragment();
+                    ((UserDetailsFragment) fragmentToReplace).setUserId(productId);
                 }
             } else {
                 if (TAG.equals(Tags.HOME_FRAGMENT)) {
@@ -178,10 +182,9 @@ public class Utils {
                     fragmentToReplace = (ProductDetailsFragment) fragment;
                     ((ProductDetailsFragment) fragmentToReplace).setProductId(productId);
                     ((ProductDetailsFragment) fragmentToReplace).setIsMyProduct(isMyProduct);
-                } else if (TAG.equals(Tags.MESSAGES_FRAGMENT)) {
-                    fragmentToReplace = (MessagesFragment) fragment;
-                    ((MessagesFragment) fragmentToReplace).setDealId(dealId);
-                    ((MessagesFragment) fragmentToReplace).setProductId(productId);
+                } else if (TAG.equals(Tags.USER_DETAILS_FRAGMENT)) {
+                    fragmentToReplace = (UserDetailsFragment) fragment;
+                    ((UserDetailsFragment) fragmentToReplace).setUserId(productId);
                 }
             }
 

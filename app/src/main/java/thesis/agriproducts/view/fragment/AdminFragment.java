@@ -13,8 +13,14 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import java.util.List;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import thesis.agriproducts.R;
+import thesis.agriproducts.domain.Api;
+import thesis.agriproducts.domain.ApiServices;
 import thesis.agriproducts.model.entities.Product;
+import thesis.agriproducts.model.entities.Result;
 import thesis.agriproducts.model.entities.User;
 import thesis.agriproducts.util.Tags;
 import thesis.agriproducts.util.Utils;
@@ -24,6 +30,9 @@ import thesis.agriproducts.view.adapter.UserAdapter;
 public class AdminFragment extends Fragment {
 
     //region Attributes
+    ApiServices api = Api.getInstance().getApiServices();
+    Call<Result> call;
+
     String CURRENT_TAG = "";
     View mView;
     TextView mTitle, mErrorView;
@@ -76,11 +85,57 @@ public class AdminFragment extends Fragment {
     }
 
     private void showProducts() {
+        clearAll();
+        Utils.getUtils().showProgress(true, mProgress, mRecyclerView);
+        call = api.getAllProducts();
+        call.enqueue(new Callback<Result>() {
+            @Override
+            public void onResponse(@Nullable Call<Result> call, @NonNull final Response<Result> response) {
+                try {
+                    Utils.getUtils().showProgress(false, mProgress, mRecyclerView);
+                    if(response.errorBody() != null)
+                        throw new Exception(response.errorBody().string());
+                    if(response.body().getError())
+                        throw new Exception(response.body().getMessage());
+                    productList = response.body().getProducts();
+                    fillProducts();
+                } catch (Exception ex) {
+                    handleError(ex.getMessage());
+                }
+            }
 
+            @Override
+            public void onFailure(@Nullable Call<Result> call, @NonNull Throwable t) {
+                handleError("Api Failure: " + t.getMessage());
+            }
+        });
     }
 
     private void showUsers() {
+        clearAll();
+        Utils.getUtils().showProgress(true, mProgress, mRecyclerView);
+        call = api.getAllUsers();
+        call.enqueue(new Callback<Result>() {
+            @Override
+            public void onResponse(@Nullable Call<Result> call, @NonNull final Response<Result> response) {
+                try {
+                    Utils.getUtils().showProgress(false, mProgress, mRecyclerView);
+                    if(response.errorBody() != null)
+                        throw new Exception(response.errorBody().string());
+                    if(response.body().getError())
+                        throw new Exception(response.body().getMessage());
+                    userList = response.body().getUsers();
+                    fillUsers();
+                } catch (Exception ex) {
+                    handleError(ex.getMessage());
+                }
+            }
 
+            @Override
+            public void onFailure(@Nullable Call<Result> call, @NonNull Throwable t) {
+                handleError("Api Failure: " + t.getMessage());
+            }
+        });
     }
 
     private void fillProducts() {
@@ -88,8 +143,8 @@ public class AdminFragment extends Fragment {
         mProductAdapter.setOnItemClickListener(new ProductAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-//                Utils.setProductId(productList.get(position).getProductId());
-//                Utils.switchContent(getActivity(), R.id.adminContainer, Tags.PRODUCT_DETAILS_FRAGMENT);
+                Utils.setProductId(productList.get(position).getProductId());
+                Utils.switchContent(getActivity(), R.id.adminContainer, Tags.PRODUCT_DETAILS_FRAGMENT);
             }
         });
         mRecyclerView.setAdapter(mProductAdapter);
@@ -100,8 +155,8 @@ public class AdminFragment extends Fragment {
         mUserAdapter.setOnItemClickListener(new UserAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-//                Utils.setProductId(userList.get(position).getUserId());
-//                Utils.switchContent(getActivity(), R.id.adminContainer, Tags.PRODUCT_DETAILS_FRAGMENT);
+                Utils.setUserId(userList.get(position).getUserId());
+                Utils.switchContent(getActivity(), R.id.adminContainer, Tags.USER_DETAILS_FRAGMENT);
             }
         });
         mRecyclerView.setAdapter(mUserAdapter);
@@ -111,5 +166,11 @@ public class AdminFragment extends Fragment {
         Utils.getUtils().showProgress(false, mProgress, mRecyclerView);
         mErrorView.setText(error);
         mErrorView.setVisibility(View.VISIBLE);
+    }
+
+    private void clearAll(){
+        mRecyclerView.setAdapter(null);
+        mErrorView.setVisibility(View.GONE);
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 }

@@ -4,12 +4,17 @@
 
     <item
         android:id="@+id/navigation_users"
-        android:icon="@drawable/ic_account_circle_black_24dp"
+        android:icon="@drawable/ic_person_black_24dp"
         android:title="@string/title_users" />
 
     <item
         android:id="@+id/navigation_products"
         android:icon="@drawable/ic_add_shopping_cart_black_24dp"
         android:title="@string/title_products" />
+
+    <item
+        android:id="@+id/navigation_admin_account"
+        android:icon="@drawable/ic_account_circle_black_24dp"
+        android:title="@string/title_account" />
 
 </menu>

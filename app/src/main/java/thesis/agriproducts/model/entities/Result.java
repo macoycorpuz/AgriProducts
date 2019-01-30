@@ -1,9 +1,6 @@
 package thesis.agriproducts.model.entities;
 
-import android.support.annotation.NonNull;
-
 import com.google.gson.annotations.SerializedName;
-
 import java.util.List;
 
 public class Result {
@@ -12,6 +9,8 @@ public class Result {
     private Boolean error = false;
     @SerializedName("message")
     private String message;
+    @SerializedName("isAdmin")
+    private Boolean isAdmin = false;
     @SerializedName("user")
     private User user;
     @SerializedName("product")
@@ -25,10 +24,11 @@ public class Result {
     @SerializedName("messages")
     private List<Message> messages;
 
-    public Result(Boolean error, String message, User user) {
-        this.error = error;
-        this.message = message;
-        this.user = user;
+    public Result() {
+    }
+
+    public Boolean getIsAdmin() {
+        return isAdmin;
     }
 
     public Boolean getError() {

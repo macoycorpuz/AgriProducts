@@ -68,21 +68,12 @@ public class LoginActivity extends AppCompatActivity{
         if (!Utils.getUtils().isEmptyFields(email, password)) {
             mErrorView.setText(R.string.error_login);
             mErrorView.setVisibility(View.VISIBLE);
-        } else if (!Utils.getUtils().isEmailValid(email)) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
-            mEmailView.requestFocus();
-        }
-        else if (!Utils.getUtils().isPasswordValid(password)) {
-            mPasswordView.setError(getString(R.string.error_invalid_password));
-            mPasswordView.requestFocus();
         } else {
             Utils.getUtils().hideKeyboard(this);
             login(email, password);
         }
     }
 
-    //TODO: Add Admin login
-    //TODO: Check if activated
     private void login(String email, String password) {
         pDialog = Utils.showProgressDialog(this, "Logging In...");
         ApiServices api = Api.getInstance().getApiServices();
@@ -97,9 +88,13 @@ public class LoginActivity extends AppCompatActivity{
                         throw new Exception(response.errorBody().string());
                     if(response.body().getError())
                         throw new Exception(response.body().getMessage());
+
                     finish();
                     SharedPrefManager.getInstance().userLogin(getApplicationContext(), response.body().getUser());
-                    startActivity(new Intent(getApplicationContext(), HomeActivity.class));
+                    if(response.body().getIsAdmin())
+                        startActivity(new Intent(getApplicationContext(), AdminActivity.class));
+                    else
+                        startActivity(new Intent(getApplicationContext(), HomeActivity.class));
 
                 } catch (Exception ex) {
                     handleError(ex.getMessage());

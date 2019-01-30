@@ -80,8 +80,29 @@ $app->post('/register', function (Request $request, Response $response) {
 $app->get('/users', function (Request $request, Response $response) {
     $db = new DbOperation();
     $users = $db->getAllUsers();
-    if($users != []) $response->getBody()->write(json_encode(array("users" => $users)));
-    else $response->getBody()->write(json_encode(array("error" => true, "message" => "No users found")));
+    $responseData = array();
+    if($users != []) {
+        $responseData['error'] = false;
+        $responseData['users'] = $users;
+    } else {
+        $responseData['error'] = true;
+        $responseData['message'] = 'No user/s found';
+    }
+    $response->getBody()->write(json_encode($responseData)); 
+});
+$app->get('/users/userId/{userId}', function (Request $request, Response $response) {
+    $userId = $request->getAttribute('userId');
+    $db = new DbOperation();
+    $user = $db->getUserbyId($userId);
+    $responseData = array();
+    if($user != null) {
+        $responseData['error'] = false;
+        $responseData['user'] = $user;
+    } else {
+        $responseData['error'] = true;
+        $responseData['message'] = 'No user/s found';
+    }
+    $response->getBody()->write(json_encode($responseData)); 
 });
 $app->post('/users/change/password', function (Request $request, Response $response) {
     if (isTheseParametersAvailable(array('userId', 'oldPassword', 'newPassword'))) {

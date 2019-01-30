@@ -14,7 +14,7 @@ class DbOperation
     function userLogin($email, $pass, &$user)
     {
         $password = md5($pass);
-        $stmt1 = $this->con->query("SELECT * FROM admin WHERE email = '$email' AND password = '$password'");
+        $stmt1 = $this->con->query("SELECT * FROM admin WHERE email = '$email' AND password = '$pass'");
         $stmt2 = $this->con->query("SELECT * FROM users WHERE email = '$email' AND password = '$password'");
         if ($stmt1->num_rows > 0) {
             $user =  $stmt1->fetch_assoc();
@@ -164,7 +164,7 @@ class DbOperation
 
     function getAllUsers()
     {
-        $stmt = $this->con->query("SELECT userId, name, email, number, address FROM users");
+        $stmt = $this->con->query("SELECT * FROM users");
         
         $users = array();
         while($row = $stmt->fetch_assoc()){
@@ -182,6 +182,14 @@ class DbOperation
             array_push($products, $row);
         }
         return $products;
+    }
+
+    function getUserbyId($userId)
+    {
+        $sql = "SELECT * FROM users WHERE userId = $userId";
+        $stmt = $this->con->query($sql);
+        $user = $stmt->fetch_assoc();
+        return $user;
     }
 
     function deleteUser($userId) 

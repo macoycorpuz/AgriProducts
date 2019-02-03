@@ -25,6 +25,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import thesis.agriproducts.AppController;
+import thesis.agriproducts.view.fragment.AccountAdminFragment;
 import thesis.agriproducts.view.fragment.AccountFragment;
 import thesis.agriproducts.view.fragment.AdminFragment;
 import thesis.agriproducts.view.fragment.HomeFragment;
@@ -165,7 +166,7 @@ public class Utils {
                     ((MessagesFragment) fragmentToReplace).setProductId(productId);
                 } else if (TAG.equals(Tags.USER_DETAILS_FRAGMENT)) {
                     fragmentToReplace = new UserDetailsFragment();
-                    ((UserDetailsFragment) fragmentToReplace).setUserId(productId);
+                    ((UserDetailsFragment) fragmentToReplace).setUserId(userId);
                 }
             } else {
                 if (TAG.equals(Tags.HOME_FRAGMENT)) {
@@ -184,7 +185,7 @@ public class Utils {
                     ((ProductDetailsFragment) fragmentToReplace).setIsMyProduct(isMyProduct);
                 } else if (TAG.equals(Tags.USER_DETAILS_FRAGMENT)) {
                     fragmentToReplace = (UserDetailsFragment) fragment;
-                    ((UserDetailsFragment) fragmentToReplace).setUserId(productId);
+                    ((UserDetailsFragment) fragmentToReplace).setUserId(userId);
                 }
             }
 
@@ -196,12 +197,33 @@ public class Utils {
     }
 
     public static void switchContentAdmin(FragmentActivity baseActivity, int id, String TAG) {
-        Fragment adminFragment = new AdminFragment();
+        Fragment fragmentToReplace;
         FragmentManager fragmentManager = baseActivity.getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        ((AdminFragment) adminFragment).setTag(TAG);
-        transaction.replace(id, adminFragment, TAG);
-        transaction.commit();
+
+        if (!TAG.equals(CURRENT_TAG)) {
+            Fragment fragment = fragmentManager.findFragmentByTag(TAG);
+            if (fragment == null) {
+
+                if (TAG.equals(Tags.ACCOUNT_ADMIN_FRAGMENT)) {
+                    fragmentToReplace = new AccountAdminFragment();
+                } else {
+                    fragmentToReplace = new AdminFragment();
+                    ((AdminFragment) fragmentToReplace).setTag(TAG);
+                }
+            } else {
+                if (TAG.equals(Tags.ACCOUNT_ADMIN_FRAGMENT)) {
+                    fragmentToReplace = (AccountAdminFragment) fragment;
+                } else {
+                    fragmentToReplace = (AdminFragment) fragment;
+                    ((AdminFragment) fragmentToReplace).setTag(TAG);
+                }
+            }
+
+            CURRENT_TAG = TAG;
+            transaction.replace(id, fragmentToReplace, TAG);
+            transaction.commit();
+        }
     }
 
     public static void setProductId(int productId) {

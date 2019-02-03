@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,7 @@ import thesis.agriproducts.domain.ApiServices;
 import thesis.agriproducts.model.entities.Product;
 import thesis.agriproducts.model.entities.Result;
 import thesis.agriproducts.model.entities.User;
+import thesis.agriproducts.util.SharedPrefManager;
 import thesis.agriproducts.util.Tags;
 import thesis.agriproducts.util.Utils;
 import thesis.agriproducts.view.adapter.ProductAdapter;
@@ -125,6 +127,7 @@ public class AdminFragment extends Fragment {
                     if(response.body().getError())
                         throw new Exception(response.body().getMessage());
                     userList = response.body().getUsers();
+
                     fillUsers();
                 } catch (Exception ex) {
                     handleError(ex.getMessage());
@@ -138,12 +141,14 @@ public class AdminFragment extends Fragment {
         });
     }
 
+    //region Methods
     private void fillProducts() {
         mProductAdapter = new ProductAdapter(getActivity(), productList);
         mProductAdapter.setOnItemClickListener(new ProductAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
                 Utils.setProductId(productList.get(position).getProductId());
+                Utils.setIsMyProduct(true);
                 Utils.switchContent(getActivity(), R.id.adminContainer, Tags.PRODUCT_DETAILS_FRAGMENT);
             }
         });
@@ -173,4 +178,5 @@ public class AdminFragment extends Fragment {
         mErrorView.setVisibility(View.GONE);
         mSwipeRefreshLayout.setRefreshing(false);
     }
+    //endregion
 }

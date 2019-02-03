@@ -6,6 +6,8 @@ public class User {
 
     @SerializedName("userId")
     private int userId;
+    @SerializedName("adminId")
+    private int adminId;
     @SerializedName("name")
     private String name;
     @SerializedName("email")
@@ -27,6 +29,16 @@ public class User {
         this.email = email;
         this.number = number;
         this.address = address;
+    }
+
+    public User(int adminId, String name, String email) {
+        this.adminId = adminId;
+        this.name = name;
+        this.email = email;
+    }
+
+    public int getAdminId() {
+        return adminId;
     }
 
     public int getUserId() {

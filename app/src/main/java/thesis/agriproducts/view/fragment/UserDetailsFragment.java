@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +22,9 @@ import thesis.agriproducts.domain.Api;
 import thesis.agriproducts.domain.ApiServices;
 import thesis.agriproducts.model.entities.Result;
 import thesis.agriproducts.model.entities.User;
+import thesis.agriproducts.util.Tags;
 import thesis.agriproducts.util.Utils;
+import thesis.agriproducts.view.activity.AdminActivity;
 
 public class UserDetailsFragment extends Fragment {
 
@@ -96,7 +99,7 @@ public class UserDetailsFragment extends Fragment {
     }
 
     private void activateUser() {
-        call = api.activate();
+        call = api.activate(userId);
         call.enqueue(new Callback<Result>() {
             @Override
             public void onResponse(@Nullable Call<Result> call, @NonNull final Response<Result> response) {
@@ -111,7 +114,6 @@ public class UserDetailsFragment extends Fragment {
                     handleError(ex.getMessage());
                 }
             }
-
             @Override
             public void onFailure(@Nullable Call<Result> call, @NonNull Throwable t) {
                 handleError("Api Failure: " + t.getMessage());
@@ -121,8 +123,7 @@ public class UserDetailsFragment extends Fragment {
 
     private void deleteUser() {
         pDialog = Utils.showProgressDialog(getActivity(), "Deleting product...");
-        ApiServices api = Api.getInstance().getApiServices();
-        Call<Result> call = api.deleteUser(userId);
+        call = api.deleteUser(userId);
         call.enqueue(new Callback<Result>() {
             @Override
             public void onResponse(@Nullable Call<Result> call, @NonNull final Response<Result> response) {
@@ -132,7 +133,7 @@ public class UserDetailsFragment extends Fragment {
                         throw new Exception(response.errorBody().string());
                     if (response.body().getError())
                         throw new Exception(response.body().getMessage());
-                    //TODO: Go to admin fragment
+                    Utils.switchContentAdmin(getActivity(), R.id.adminContainer, Tags.USERS_FRAGMENT);
                     Toast.makeText(getActivity(), "User has been deleted.", Toast.LENGTH_LONG).show();
                 } catch (Exception ex) {
                     handleError(ex.getMessage());
@@ -149,14 +150,14 @@ public class UserDetailsFragment extends Fragment {
     private void fillDetails() {
         mName.setText(user.getName());
         mEmail.setText(String.valueOf(user.getEmail()));
-//        mNumber.setText(String.valueOf(user.getNumber()));
-//        mAddress.setText(user.getAddress());
-//        mActivate.setText(user.getIsActivated() ? "Activated" : "Inactive");
-//        Picasso.get()
-//                .load(user.getUrl())
-//                .placeholder(R.drawable.ic_photo_light_blue_24dp)
-//                .error(R.drawable.ic_error_outline_red_24dp)
-//                .into(mImage);
+        mNumber.setText(String.valueOf(user.getNumber()));
+        mAddress.setText(user.getAddress());
+        mActivate.setText(user.getIsActivated() ? "Activated" : "Inactive");
+        Picasso.get()
+                .load(user.getUrl())
+                .placeholder(R.drawable.ic_photo_light_blue_24dp)
+                .error(R.drawable.ic_error_outline_red_24dp)
+                .into(mImage);
     }
 
     private void handleError(String error) {

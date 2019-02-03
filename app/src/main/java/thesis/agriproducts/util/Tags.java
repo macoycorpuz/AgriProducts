@@ -13,4 +13,5 @@ public interface Tags {
 
     String USERS_FRAGMENT = "Users";
     String PRODUCTS_FRAGMENT = "Products";
+    String ACCOUNT_ADMIN_FRAGMENT = "Admin Account";
 }

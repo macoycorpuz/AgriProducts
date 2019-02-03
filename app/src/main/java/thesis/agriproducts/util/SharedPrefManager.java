@@ -13,6 +13,9 @@ public class SharedPrefManager {
     private static final String KEY_USER_EMAIL = "email";
     private static final String KEY_USER_NUMBER = "number";
     private static final String KEY_USER_ADDRESS = "address";
+    private static final String KEY_ADMIN_ID = "adminId";
+    private static final String KEY_ADMIN_NAME = "adminName";
+    private static final String KEY_ADMIN_EMAIL = "adminEmail";
 
     private static SharedPrefManager sharedPrefManager = new SharedPrefManager();
 
@@ -31,6 +34,15 @@ public class SharedPrefManager {
         editor.apply();
     }
 
+    public void adminLogin(Context mCtx, User user) {
+        SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(KEY_ADMIN_ID, user.getUserId());
+        editor.putString(KEY_ADMIN_NAME, user.getName());
+        editor.putString(KEY_ADMIN_EMAIL, user.getEmail());
+        editor.apply();
+    }
+
     public boolean isLoggedIn(Context mCtx) {
         SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
         return (sharedPreferences.getInt(KEY_USER_ID, 0) != 0);
@@ -44,6 +56,15 @@ public class SharedPrefManager {
                 sharedPreferences.getString(KEY_USER_EMAIL, null),
                 sharedPreferences.getString(KEY_USER_NUMBER, null),
                 sharedPreferences.getString(KEY_USER_ADDRESS, null)
+        );
+    }
+
+    public User getAdmin(Context mCtx) {
+        SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+        return new User(
+                sharedPreferences.getInt(KEY_ADMIN_ID, 0),
+                sharedPreferences.getString(KEY_ADMIN_NAME, null),
+                sharedPreferences.getString(KEY_ADMIN_EMAIL, null)
         );
     }
 

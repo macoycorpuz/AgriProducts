@@ -36,6 +36,9 @@ public class AdminActivity extends AppCompatActivity {
                 case R.id.navigation_products:
                     Utils.switchContentAdmin(AdminActivity.this, R.id.adminContainer, Tags.PRODUCTS_FRAGMENT);
                     return true;
+                case R.id.navigation_admin_account:
+                    Utils.switchContentAdmin(AdminActivity.this, R.id.adminContainer, Tags.ACCOUNT_ADMIN_FRAGMENT);
+                    return true;
             }
             return false;
         }

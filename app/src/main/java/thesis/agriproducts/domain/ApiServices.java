@@ -15,7 +15,7 @@ import thesis.agriproducts.model.entities.Result;
 public interface ApiServices {
 
 //    String MAIN_URL = "http://agriproducts.000webhostapp.com/public/";
-    String MAIN_URL = "http://192.168.1.7/AgriProducts/public/";
+    String MAIN_URL = "http://192.168.1.10/AgriProducts/public/";
 
     //region Login and Sign Up
     @FormUrlEncoded
@@ -95,14 +95,23 @@ public interface ApiServices {
     @GET("users/userId/{userId}")
     Call<Result> getUser(@Path("userId") int userId);
 
-    @GET("users/activate")
-    Call<Result> activate();
+    @GET("users/activate/userId/{userId}")
+    Call<Result> activate(@Path("userId") int userId);
 
     @DELETE("users/delete/{userId}")
     Call<Result> deleteUser(@Path("userId") int userId);
 
     @GET("products")
     Call<Result> getAllProducts();
+
+    @FormUrlEncoded
+    @POST("admin/change/password")
+    Call<Result> changeAdminPassword(@Field("adminId") int adminId, @Field("oldPassword") String oldPassword, @Field("newPassword") String newPassword);
+
+    @FormUrlEncoded
+    @POST("admin/add")
+    Call<Result> addAmin(@Field("name") String name, @Field("email") String email, @Field("password") String password);
+
     //endregion
 
 }

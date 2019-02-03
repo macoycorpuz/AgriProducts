@@ -90,11 +90,13 @@ public class LoginActivity extends AppCompatActivity{
                         throw new Exception(response.body().getMessage());
 
                     finish();
-                    SharedPrefManager.getInstance().userLogin(getApplicationContext(), response.body().getUser());
-                    if(response.body().getIsAdmin())
+                    if(response.body().getIsAdmin()) {
+                        SharedPrefManager.getInstance().adminLogin(getApplicationContext(), response.body().getUser());
                         startActivity(new Intent(getApplicationContext(), AdminActivity.class));
-                    else
+                    } else {
+                        SharedPrefManager.getInstance().userLogin(getApplicationContext(), response.body().getUser());
                         startActivity(new Intent(getApplicationContext(), HomeActivity.class));
+                    }
 
                 } catch (Exception ex) {
                     handleError(ex.getMessage());

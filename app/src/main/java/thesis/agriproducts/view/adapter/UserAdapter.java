@@ -43,6 +43,8 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
                 .load(user.getUrl())
                 .placeholder(R.drawable.ic_photo_light_blue_24dp)
                 .error(R.drawable.ic_error_outline_red_24dp)
+                .fit()
+                .centerCrop()
                 .into(holder.imgUser);
     }
 

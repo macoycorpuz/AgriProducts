@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -18,38 +17,29 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
-
 import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import thesis.agriproducts.R;
 import thesis.agriproducts.domain.Api;
-import thesis.agriproducts.domain.ApiServices;
+import thesis.agriproducts.domain.ApiHelper;
+import thesis.agriproducts.model.CenterRepository;
+import thesis.agriproducts.model.entities.Deal;
 import thesis.agriproducts.model.entities.Message;
-import thesis.agriproducts.model.entities.Product;
 import thesis.agriproducts.model.entities.Result;
 import thesis.agriproducts.util.SharedPrefManager;
 import thesis.agriproducts.util.Utils;
-import thesis.agriproducts.view.adapter.InboxAdapter;
 import thesis.agriproducts.view.adapter.MessagesAdapter;
-import thesis.agriproducts.view.adapter.ProductAdapter;
 
-//TODO: (Add Function) - Bottom RecyclerView
-//TODO: (Send Message) - Refresh or update adapter for new message. Check simplifiedcoding.com
 public class MessagesFragment extends Fragment {
 
     //region Attributes
-    int userId, dealId, productId;
-    String content;
-    ApiServices api = Api.getInstance().getApiServices();
-    Call<Result> call;
-    Product product;
-    Message message;
-    List<Message> messageList;
-
+    String TAG = "Messages Fragment";
     View mView, mViewProduct;
     TextView mErrorView, mMessage;
+    TextView mProductName, mProductSeller, mProductLocation, mProductPrice;
+    ImageView mProductImage;
     ProgressBar mProgress;
     ProgressDialog pDialog;
 
@@ -57,8 +47,11 @@ public class MessagesFragment extends Fragment {
     RecyclerView.LayoutManager layoutManager;
     MessagesAdapter mMessagesAdapter;
 
-    TextView mProductName, mProductLocation, mProductPrice, mProductStatus;
-    ImageView mProductImage;
+    int position, userId;
+    String content;
+    Message message;
+    Deal deal;
+    List<Message> messageList;
     //endregion
 
     @Override
@@ -70,9 +63,9 @@ public class MessagesFragment extends Fragment {
 
         mViewProduct = mView.findViewById(R.id.itemProduct);
         mProductName = mViewProduct.findViewById(R.id.txtItemProductName);
+        mProductSeller = mViewProduct.findViewById(R.id.txtItemProductSeller);
         mProductLocation = mViewProduct.findViewById(R.id.txtItemProductLocation);
         mProductPrice = mViewProduct.findViewById(R.id.txtItemProductPrice);
-        mProductStatus = mViewProduct.findViewById(R.id.txtItemProductStatus);
         mProductImage = mViewProduct.findViewById(R.id.imgItemProductThumb);
 
         mProgress = mView.findViewById(R.id.progMessages);
@@ -90,126 +83,104 @@ public class MessagesFragment extends Fragment {
         });
 
         userId = SharedPrefManager.getInstance().getUser(getActivity()).getUserId();
+        deal = CenterRepository.getCenterRepository().getListOfDeals().get(position);
         showProduct();
-        showMessages();
+        fetchMessages();
         return mView;
     }
 
-    public void setDealId(int dealId) { this.dealId = dealId; }
-
-    public void setProductId(int productId) { this.productId = productId; }
-
-    private void showProduct() {
-        mErrorView.setVisibility(View.GONE);
-        call = api.getProduct(productId);
-        call.enqueue(new Callback<Result>() {
-            @Override
-            public void onResponse(@Nullable Call<Result> call, @NonNull Response<Result> response) {
-                try {
-                    if (response.errorBody() != null)
-                        throw new Exception(response.errorBody().string());
-                    if (response.body().getError())
-                        throw new Exception(response.body().getMessage());
-                    product = response.body().getProduct();
-                    fillProduct();
-                } catch (Exception ex) {
-                    handleError(ex.getMessage());
-                }
-            }
-            @Override
-            public void onFailure(@Nullable Call<Result> call, @NonNull Throwable t) {
-                handleError("Api Failure: " + t.getMessage());
-            }
-        });
+    public void setPosition(int position) {
+        this.position = position;
     }
 
-    private void showMessages() {
-        Utils.getUtils().showProgress(true, mProgress, mRecyclerView);
+    private void clearViews() {
         mRecyclerView.setAdapter(null);
         mErrorView.setVisibility(View.GONE);
-        call = api.getMessages(dealId, userId);
-        call.enqueue(new Callback<Result>() {
+    }
+
+    private void showProduct() {
+        String price = "PHP " + deal.getProduct().getPrice();
+        mProductName.setText(deal.getProduct().getProductName());
+        mProductLocation.setText(deal.getProduct().getLocation());
+        mProductPrice.setText(price);
+        mProductSeller.setText(deal.getProduct().getUser().getName());
+        Picasso.get()
+                .load(deal.getProduct().getProductUrl())
+                .placeholder(R.drawable.ic_photo_light_blue_24dp)
+                .error(R.drawable.ic_error_outline_red_24dp)
+                .fit()
+                .centerCrop()
+                .into(mProductImage);
+    }
+
+    private void fetchMessages() {
+        clearViews();
+        Utils.showProgress(true, mProgress, mRecyclerView);
+        Api.getInstance().getServices().getMessages(deal.getDealId()).enqueue(new Callback<Result>() {
             @Override
             public void onResponse(@Nullable Call<Result> call, @NonNull Response<Result> response) {
                 try {
-                    Utils.getUtils().showProgress(false, mProgress, mRecyclerView);
+                    Utils.showProgress(false, mProgress, mRecyclerView);
                     if (response.errorBody() != null)
                         throw new Exception(response.errorBody().string());
                     if (response.body().getError())
                         throw new Exception(response.body().getMessage());
                     messageList = response.body().getMessages();
-                    fillMessages();
+                    showMessages();
                     scrollToBottom();
                 } catch (Exception ex) {
-                    handleError(ex.getMessage());
+                    ApiHelper.handleError(ex.getMessage(), mErrorView, mProgress, mRecyclerView);
                 }
             }
 
             @Override
             public void onFailure(@Nullable Call<Result> call, @NonNull Throwable t) {
-                handleError("Api Failure: " + t.getMessage());
+                ApiHelper.handleError(t.getMessage(), mErrorView, mProgress, mRecyclerView);
             }
         });
     }
 
     private void sendMessage() {
-        pDialog = Utils.showProgressDialog(getActivity(), "Sending message...");
+        String time = android.text.format.DateFormat.format("kk:mm MM/dd/yyyy", new java.util.Date()).toString();
         mErrorView.setVisibility(View.GONE);
-
+        pDialog = Utils.showProgressDialog(getActivity(), "Sending message...");
         content = mMessage.getText().toString();
-        message = new Message(dealId, userId, content);
-        call = api.sendMessage(dealId, userId, content);
-        call.enqueue(new Callback<Result>() {
+        message = new Message(deal.getDealId(), userId, content, time);
+        Api.getInstance().getServices().setMessage(deal.getDealId(), userId, content).enqueue(new Callback<Result>() {
             @Override
             public void onResponse(@Nullable Call<Result> call, @NonNull Response<Result> response) {
                 try {
                     Utils.dismissProgressDialog(pDialog);
-                    if (response.errorBody() != null)
+                    if (!response.isSuccessful())
                         throw new Exception(response.errorBody().string());
                     if (response.body().getError())
                         throw new Exception(response.body().getMessage());
                     messageList.add(message);
+                    mMessagesAdapter.notifyDataSetChanged();
                     scrollToBottom();
                 } catch (Exception ex) {
-                    handleError(ex.getMessage());
+                    Utils.dismissProgressDialog(pDialog);
+                    Toast.makeText(getActivity(), ex.getMessage(), Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailure(@Nullable Call<Result> call, @NonNull Throwable t) {
-                handleError("Api Failure: " + t.getMessage());
+                Utils.dismissProgressDialog(pDialog);
+                Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }
 
-    private void fillProduct() {
-        mProductName.setText(product.getProductName());
-        mProductLocation.setText(product.getLocation());
-        mProductPrice.setText(String.valueOf(product.getPrice()));
-        mProductStatus.setText(product.getStatus());
-        Picasso.get()
-                .load(product.getProductUrl())
-                .placeholder(R.drawable.ic_photo_light_blue_24dp)
-                .error(R.drawable.ic_error_outline_red_24dp)
-                .into(mProductImage);
-    }
-
-    private void fillMessages() {
+    private void showMessages() {
         mMessagesAdapter = new MessagesAdapter(getActivity(), messageList, userId);
         mRecyclerView.setAdapter(mMessagesAdapter);
     }
 
-    private void handleError(String error) {
-        Utils.dismissProgressDialog(pDialog);
-        Utils.getUtils().showProgress(false, mProgress, mRecyclerView);
-        mErrorView.setText(error);
-        mErrorView.setVisibility(View.VISIBLE);
-    }
-
     private void scrollToBottom() {
-        mMessagesAdapter.notifyDataSetChanged();
         if (mMessagesAdapter.getItemCount() > 1)
             mRecyclerView.getLayoutManager().smoothScrollToPosition(mRecyclerView, null, mMessagesAdapter.getItemCount() - 1);
+        mMessagesAdapter.notifyDataSetChanged();
     }
 }
 

@@ -1,51 +1,75 @@
 package thesis.agriproducts.model.entities;
-import com.google.gson.annotations.SerializedName;
+import com.google.gson.annotations.Expose;
 
 public class Deal {
 
-    @SerializedName("dealId")
+    @Expose
     private int dealId;
-    @SerializedName("productId")
+    @Expose
     private int productId;
-    @SerializedName("buyerId")
+    @Expose
     private int buyerId;
-    @SerializedName("time")
+    @Expose
     private String time;
-    @SerializedName("productUrl")
-    private String productUrl;
-    @SerializedName("productName")
-    private String productName;
-    @SerializedName("name")
-    private String name;
+    @Expose
+    private Product product;
+    @Expose
+    private User user;
 
-    public Deal() {
+    public Deal(int dealId, int productId, int buyerId, String time, Product product, User user) {
+        this.dealId = dealId;
+        this.productId = productId;
+        this.buyerId = buyerId;
+        this.time = time;
+        this.product = product;
+        this.user = user;
     }
 
     public int getDealId() {
         return dealId;
     }
 
+    public void setDealId(int dealId) {
+        this.dealId = dealId;
+    }
+
     public int getProductId() {
         return productId;
+    }
+
+    public void setProductId(int productId) {
+        this.productId = productId;
     }
 
     public int getBuyerId() {
         return buyerId;
     }
 
+    public void setBuyerId(int buyerId) {
+        this.buyerId = buyerId;
+    }
+
     public String getTime() {
         return time;
     }
 
-    public String getProductUrl() {
-        return productUrl;
+    public void setTime(String time) {
+        this.time = time;
     }
 
-    public String getProductName() {
-        return productName;
+    public Product getProduct() {
+        return product;
     }
 
-    public String getName() {
-        return name;
+    public void setProduct(Product product) {
+        this.product = product;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

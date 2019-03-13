@@ -68,32 +68,55 @@
                     android:hint="@string/prompt_location"/>
             </android.support.design.widget.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <EditText
-                    android:id="@+id/txtSellPrice"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/prompt_price"
-                    android:inputType="numberDecimal"
-                    android:imeActionId="6" />
+                    android:layout_weight="1">
 
-            </android.support.design.widget.TextInputLayout>
+                    <EditText
+                        android:id="@+id/txtSellPrice"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/prompt_price"
+                        android:inputType="numberDecimal"
+                        android:imeActionId="6" />
 
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                </android.support.design.widget.TextInputLayout>
 
-                <EditText
-                    android:id="@+id/txtSellQuantity"
+                <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/prompt_quantity"
-                    android:imeActionId="6"
-                    android:inputType="number"/>
+                    android:layout_weight="1">
 
-            </android.support.design.widget.TextInputLayout>
+                    <EditText
+                        android:id="@+id/txtSellQuantity"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/prompt_quantity"
+                        android:imeActionId="6"
+                        android:inputType="number"/>
+
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
+
+                    <EditText
+                        android:id="@+id/txtSellUnit"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/prompt_unit"
+                        android:inputType="text"/>
+
+                </android.support.design.widget.TextInputLayout>
+            </LinearLayout>
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
@@ -108,6 +131,19 @@
 
             </android.support.design.widget.TextInputLayout>
 
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/txtSellStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/prompt_status"
+                    android:inputType="text"/>
+
+            </android.support.design.widget.TextInputLayout>
+
             <Button
                 android:id="@+id/btnSell"
                 android:layout_width="match_parent"
@@ -115,7 +151,6 @@
                 android:layout_marginTop="@dimen/btn_vertical_margin"
                 android:text="@string/action_product_sell"
                 android:textStyle="bold"/>
-
 
         </LinearLayout>
     </ScrollView>

@@ -21,7 +21,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import thesis.agriproducts.R;
 import thesis.agriproducts.domain.Api;
-import thesis.agriproducts.domain.ApiServices;
 import thesis.agriproducts.model.entities.Result;
 import thesis.agriproducts.util.SharedPrefManager;
 import thesis.agriproducts.util.Utils;
@@ -68,9 +67,9 @@ public class AccountAdminFragment extends Fragment {
     }
 
     private void showAdmin() {
-        adminId = SharedPrefManager.getInstance().getAdmin(getActivity()).getUserId();
-        mName.setText(SharedPrefManager.getInstance().getAdmin(getActivity()).getName());
-        mEmail.setText(SharedPrefManager.getInstance().getAdmin(getActivity()).getEmail());
+        adminId = SharedPrefManager.getInstance().getUser(getActivity()).getUserId();
+        mName.setText(SharedPrefManager.getInstance().getUser(getActivity()).getName());
+        mEmail.setText(SharedPrefManager.getInstance().getUser(getActivity()).getEmail());
     }
 
     private void showChangePassword() {
@@ -147,17 +146,15 @@ public class AccountAdminFragment extends Fragment {
     }
 
     private void changePassword(String oldP, String newP) {
-        if (!Utils.getUtils().isEmptyFields(oldP, newP)) {
+        if (!Utils.isEmptyFields(oldP, newP)) {
             Toast.makeText(getActivity(), "Invalid Fields", Toast.LENGTH_LONG).show();
-        } else if (!Utils.getUtils().isPasswordValid(oldP)) {
+        } else if (!Utils.isPasswordValid(oldP)) {
             Toast.makeText(getActivity(), "Invalid Old Password", Toast.LENGTH_LONG).show();
-        } else if (!Utils.getUtils().isPasswordValid(newP)) {
+        } else if (!Utils.isPasswordValid(newP)) {
             Toast.makeText(getActivity(), "Invalid New Password", Toast.LENGTH_LONG).show();
         }
 
-        ApiServices api = Api.getInstance().getApiServices();
-        Call<Result> call = api.changeAdminPassword(adminId, oldP, newP);
-        call.enqueue(new Callback<Result>() {
+        Api.getInstance().getServices().changePassword(adminId, oldP, newP).enqueue(new Callback<Result>() {
             @Override
             public void onResponse(@Nullable Call<Result> call, @NonNull final Response<Result> response) {
                 try {
@@ -180,15 +177,13 @@ public class AccountAdminFragment extends Fragment {
     }
 
     private void addAdmin(String name, String email, String password) {
-        if (!Utils.getUtils().isEmptyFields(name, email, password)) {
+        if (!Utils.isEmptyFields(name, email, password)) {
             Toast.makeText(getActivity(), "Invalid Fields", Toast.LENGTH_LONG).show();
-        } else if (!Utils.getUtils().isPasswordValid(password)) {
+        } else if (!Utils.isPasswordValid(password)) {
             Toast.makeText(getActivity(), "Invalid Password. (More than 8 characters)", Toast.LENGTH_LONG).show();
         }
 
-        ApiServices api = Api.getInstance().getApiServices();
-        Call<Result> call = api.addAmin(name, email, password);
-        call.enqueue(new Callback<Result>() {
+        Api.getInstance().getServices().setAdmin(name, email, password).enqueue(new Callback<Result>() {
             @Override
             public void onResponse(@Nullable Call<Result> call, @NonNull final Response<Result> response) {
                 try {

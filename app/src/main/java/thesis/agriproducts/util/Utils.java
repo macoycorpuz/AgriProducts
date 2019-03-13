@@ -39,11 +39,7 @@ import thesis.agriproducts.view.fragment.UserDetailsFragment;
 //Class for usable functions
 public class Utils {
 
-    private static int productId = 0;
-    private static int dealId = 0;
-    private static int userId = 0;
-    private static boolean isMyProduct = false;
-    private static String CURRENT_TAG = null;
+    //region Initialize
     private static Utils utils;
 
     public static Utils getUtils() {
@@ -53,6 +49,7 @@ public class Utils {
         }
         return utils;
     }
+    //endregion
 
     //region UI Interaction
     public static ProgressDialog showProgressDialog(Context context, String message) {
@@ -67,7 +64,7 @@ public class Utils {
         if (pDialog != null) pDialog.dismiss();
     }
 
-    public void showProgress(final boolean show, final View progressView, final View goneForm) {
+    public static void showProgress(final boolean show, final View progressView, final View goneForm) {
         int shortAnimTime = AppController.getInstance().resources.getInteger(android.R.integer.config_shortAnimTime);
 
         goneForm.setVisibility(show ? View.GONE : View.VISIBLE);
@@ -87,7 +84,7 @@ public class Utils {
         });
     }
 
-    public void hideKeyboard(Activity activity) {
+    public static void hideKeyboard(Activity activity) {
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
         //Find the currently focused view, so we can grab the correct window token from it.
         View view = activity.getCurrentFocus();
@@ -101,25 +98,29 @@ public class Utils {
     //endregion
 
     //region Authentication
-    public boolean isEmailValid(String email) {
-        if (email == null) return false;
-        return (!TextUtils.isEmpty(email)) && (email.contains("@"));
-    }
-
-    public boolean isPasswordValid(String password) {
-        return (!TextUtils.isEmpty(password)) && (password.length() > 8);
-    }
-
-    public boolean isEmptyFields(String... fields) {
+    public static  boolean isEmptyFields(String... fields) {
         for(String f : fields) {
             if(f.isEmpty()) return false;
         }
         return true;
     }
+
+    public static  boolean isEmailValid(String email) {
+        if (email == null) return false;
+        return (!TextUtils.isEmpty(email)) && (email.contains("@"));
+    }
+
+    public static  boolean isPasswordValid(String password) {
+        return (!TextUtils.isEmpty(password));
+    }
+
+    public static  boolean isPasswordGreaterThanEight(String password) {
+        return (password.length() > 8);
+    }
     //endregion
 
     //region Real Path
-    public String getRealPathFromURI(Context context, Uri contentUri) {
+    public static  String getRealPathFromURI(Context context, Uri contentUri) {
         String result;
         try {
             String[] proj = {MediaStore.Images.Media.DATA};
@@ -137,108 +138,67 @@ public class Utils {
     //endregion
 
     //region Fragment Util
+    private static int position = 0;
+    private static String CURRENT_TAG = null;
+
     public static void switchContent(FragmentActivity baseActivity, int id, String TAG) {
 
-        Fragment fragmentToReplace = new HomeFragment();
+        Fragment fragment;
         FragmentManager fragmentManager = baseActivity.getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         if (!TAG.equals(CURRENT_TAG)) {
-            Fragment fragment = fragmentManager.findFragmentByTag(TAG);
-            if (fragment == null) {
-
-                if (TAG.equals(Tags.HOME_FRAGMENT)) {
-                    fragmentToReplace = new HomeFragment();
-                } else if (TAG.equals(Tags.SELL_FRAGMENT)) {
-                    fragmentToReplace = new SellFragment();
-                } else if (TAG.equals(Tags.INBOX_FRAGMENT)) {
-                    fragmentToReplace = new InboxFragment();
-                } else if (TAG.equals(Tags.MY_PRODUCTS_FRAGMENT)) {
-                    fragmentToReplace = new MyProductsFragment();
-                } else if (TAG.equals(Tags.ACCOUNT_FRAGMENT)) {
-                    fragmentToReplace = new AccountFragment();
-                } else if (TAG.equals(Tags.PRODUCT_DETAILS_FRAGMENT)) {
-                    fragmentToReplace = new ProductDetailsFragment();
-                    ((ProductDetailsFragment) fragmentToReplace).setProductId(productId);
-                    ((ProductDetailsFragment) fragmentToReplace).setIsMyProduct(isMyProduct);
-                } else if (TAG.equals(Tags.MESSAGES_FRAGMENT)) {
-                    fragmentToReplace = new MessagesFragment();
-                    ((MessagesFragment) fragmentToReplace).setDealId(dealId);
-                    ((MessagesFragment) fragmentToReplace).setProductId(productId);
-                } else if (TAG.equals(Tags.USER_DETAILS_FRAGMENT)) {
-                    fragmentToReplace = new UserDetailsFragment();
-                    ((UserDetailsFragment) fragmentToReplace).setUserId(userId);
-                }
-            } else {
-                if (TAG.equals(Tags.HOME_FRAGMENT)) {
-                    fragmentToReplace = (HomeFragment) fragment;
-                } else if (TAG.equals(Tags.SELL_FRAGMENT)) {
-                    fragmentToReplace = (SellFragment) fragment;
-                } else if (TAG.equals(Tags.INBOX_FRAGMENT)) {
-                    fragmentToReplace = (InboxFragment) fragment;
-                } else if (TAG.equals(Tags.MY_PRODUCTS_FRAGMENT)) {
-                    fragmentToReplace = (MyProductsFragment) fragment;
-                } else if (TAG.equals(Tags.ACCOUNT_FRAGMENT)) {
-                    fragmentToReplace = (AccountFragment) fragment;
-                } else if (TAG.equals(Tags.PRODUCT_DETAILS_FRAGMENT)) {
-                    fragmentToReplace = (ProductDetailsFragment) fragment;
-                    ((ProductDetailsFragment) fragmentToReplace).setProductId(productId);
-                    ((ProductDetailsFragment) fragmentToReplace).setIsMyProduct(isMyProduct);
-                } else if (TAG.equals(Tags.USER_DETAILS_FRAGMENT)) {
-                    fragmentToReplace = (UserDetailsFragment) fragment;
-                    ((UserDetailsFragment) fragmentToReplace).setUserId(userId);
-                }
+            switch (TAG) {
+                case Tags.HOME_FRAGMENT:
+                    fragment = new HomeFragment();
+                    break;
+                case Tags.SELL_FRAGMENT:
+                    fragment = new SellFragment();
+                    break;
+                case Tags.INBOX_FRAGMENT:
+                    fragment = new InboxFragment();
+                    break;
+                case Tags.MY_PRODUCTS_FRAGMENT:
+                    fragment = new MyProductsFragment();
+                    break;
+                case Tags.ACCOUNT_FRAGMENT:
+                    fragment = new AccountFragment();
+                    break;
+                case Tags.PRODUCT_DETAILS_FRAGMENT:
+                    fragment = new ProductDetailsFragment();
+                    ((ProductDetailsFragment) fragment).setPosition(position);
+                    break;
+                case Tags.MESSAGES_FRAGMENT:
+                    fragment = new MessagesFragment();
+                    ((MessagesFragment) fragment).setPosition(position);
+                    break;
+                case Tags.USER_DETAILS_FRAGMENT:
+                    fragment = new UserDetailsFragment();
+                    ((UserDetailsFragment) fragment).setPosition(position);
+                    break;
+                case Tags.USERS_FRAGMENT:
+                    fragment = new AdminFragment();
+                    ((AdminFragment) fragment).setTag(TAG);
+                case Tags.PRODUCTS_FRAGMENT:
+                    fragment = new AdminFragment();
+                    ((AdminFragment) fragment).setTag(TAG);
+                    break;
+                case Tags.ACCOUNT_ADMIN_FRAGMENT:
+                    fragment = new AccountAdminFragment();
+                    break;
+                default:
+                    fragment = null;
+                    break;
             }
 
             CURRENT_TAG = TAG;
-            transaction.replace(id, fragmentToReplace, TAG);
-            transaction.commit();
-
-        }
-    }
-
-    public static void switchContentAdmin(FragmentActivity baseActivity, int id, String TAG) {
-        Fragment fragmentToReplace;
-        FragmentManager fragmentManager = baseActivity.getSupportFragmentManager();
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-
-        if (!TAG.equals(CURRENT_TAG)) {
-            Fragment fragment = fragmentManager.findFragmentByTag(TAG);
-            if (fragment == null) {
-
-                if (TAG.equals(Tags.ACCOUNT_ADMIN_FRAGMENT)) {
-                    fragmentToReplace = new AccountAdminFragment();
-                } else {
-                    fragmentToReplace = new AdminFragment();
-                    ((AdminFragment) fragmentToReplace).setTag(TAG);
-                }
-            } else {
-                if (TAG.equals(Tags.ACCOUNT_ADMIN_FRAGMENT)) {
-                    fragmentToReplace = (AccountAdminFragment) fragment;
-                } else {
-                    fragmentToReplace = (AdminFragment) fragment;
-                    ((AdminFragment) fragmentToReplace).setTag(TAG);
-                }
-            }
-
-            CURRENT_TAG = TAG;
-            transaction.replace(id, fragmentToReplace, TAG);
+            transaction.replace(id, fragment, TAG);
             transaction.commit();
         }
     }
 
-    public static void setProductId(int productId) {
-        Utils.productId = productId;
+    public static void setPosition(int position) {
+        Utils.position = position;
     }
-
-    public static void setDealId(int dealId) {
-        Utils.dealId = dealId;
-    }
-
-    public static void setUserId(int userId) {
-        Utils.userId = userId;
-    }
-
-    public static void setIsMyProduct(boolean isMyProduct) {Utils.isMyProduct = isMyProduct; }
     //endregion
 
 }

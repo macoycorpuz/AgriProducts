@@ -29,7 +29,7 @@
     <string name="error_invalid_password">Password is invalid</string>
 
     <!-- Strings related to sign up -->
-    <string name="prompt_name">Name</string>
+    <string name="prompt_name">Complete Name</string>
     <string name="prompt_confirm_password">Confirm Password</string>
     <string name="prompt_mobile_number">Mobile Number</string>
     <string name="prompt_address">Complete Address</string>
@@ -40,6 +40,8 @@
     <string name="action_sign_in">I already have an account.</string>
     <string name="error_sign_up">Please fill up all fields</string>
     <string name="error_valid_id">Please upload a valid id</string>
+    <string name="error_greater_than_eight">Password should be greater than 8</string>
+    <string name="error_confirm_password">Password doesn\'t match</string>
 
     <!-- Strings related to products -->
     <string name="prompt_product_search">Search</string>
@@ -47,11 +49,16 @@
     <string name="prompt_description">Description</string>
     <string name="prompt_location">Location</string>
     <string name="prompt_quantity">Quantity</string>
+    <string name="prompt_unit">Unit</string>
     <string name="prompt_price">Price</string>
+    <string name="prompt_seller">Seller</string>
+    <string name="prompt_status">Status</string>
     <string name="prompt_product_image">Product Image</string>
+    <string name="action_save">Save</string>
+    <string name="action_edit">Edit</string>
     <string name="action_message">Message</string>
     <string name="action_make_an_offer">Make an Offer</string>
-    <string name="action_delete">Delete Product</string>
+    <string name="action_delete">Delete</string>
 
     <!-- String related to selling -->
     <string name="action_product_sell">Sell Product</string>
@@ -71,7 +78,9 @@
     <string name="action_send">Send</string>
     <string name="error_message">No messages</string>
 
-    <!-- Strings realted to account -->
+    <!-- Strings related to account -->
+    <string name="action_save_user">Save</string>
+    <string name="action_edit_user">Edit Account</string>
     <string name="action_change_password">Change Password</string>
     <string name="action_logout">Logout</string>
 

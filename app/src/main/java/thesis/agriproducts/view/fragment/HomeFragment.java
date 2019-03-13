@@ -12,23 +12,30 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import thesis.agriproducts.R;
 import thesis.agriproducts.domain.Api;
-import thesis.agriproducts.domain.ApiServices;
+import thesis.agriproducts.domain.ApiHelper;
+import thesis.agriproducts.model.CenterRepository;
 import thesis.agriproducts.model.entities.Product;
 import thesis.agriproducts.model.entities.Result;
+import thesis.agriproducts.model.entities.User;
 import thesis.agriproducts.util.SharedPrefManager;
 import thesis.agriproducts.util.Tags;
 import thesis.agriproducts.util.Utils;
 import thesis.agriproducts.view.adapter.ProductAdapter;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment{
 
     //region Attributes
     View mView;
@@ -39,7 +46,6 @@ public class HomeFragment extends Fragment {
     ProgressBar mProgress;
     SwipeRefreshLayout mSwipeRefreshLayout;
     List<Product> productList;
-    int userId;
     //endregion
 
     @Override
@@ -57,7 +63,7 @@ public class HomeFragment extends Fragment {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if((event.getAction() == KeyEvent.ACTION_DOWN && keyCode ==KeyEvent.KEYCODE_ENTER))
                 {
-                    showProducts(mSearchProduct.getText().toString());
+                    searchProducts(mSearchProduct.getText().toString());
                     return true;
                 }
                 return false;
@@ -66,54 +72,57 @@ public class HomeFragment extends Fragment {
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                showProducts(null);
+                fetchProducts();
             }
         });
-
-        userId = SharedPrefManager.getInstance().getUser(getActivity()).getUserId();
-        showProducts(null);
+        fetchProducts();
         return mView;
     }
 
-    private void showProducts(String productName) {
+    private void clearViews() {
         mRecyclerView.setAdapter(null);
         mErrorView.setVisibility(View.GONE);
         mSwipeRefreshLayout.setRefreshing(false);
+    }
 
-        Utils.getUtils().showProgress(true, mProgress, mRecyclerView);
-        ApiServices api = Api.getInstance().getApiServices();
-        Call<Result> call;
-        if(productName == null) call = api.getProducts(userId);
-        else call = api.getProductByName(productName);
-        call.enqueue(new Callback<Result>() {
+    private void fetchProducts() {
+        clearViews();
+        Utils.showProgress(true, mProgress, mRecyclerView);
+        Api.getInstance().getServices().getProducts().enqueue(new Callback<Result>() {
             @Override
             public void onResponse(@Nullable Call<Result> call, @NonNull final Response<Result> response) {
                 try {
-                    Utils.getUtils().showProgress(false, mProgress, mRecyclerView);
+                    Utils.showProgress(false, mProgress, mRecyclerView);
                     if(response.errorBody() != null)
                         throw new Exception(response.errorBody().string());
                     if(response.body().getError())
                         throw new Exception(response.body().getMessage());
                     productList = response.body().getProducts();
-                    fillProducts();
+                    CenterRepository.getCenterRepository().setListOfProducts(productList);
+                    showProducts();
                 } catch (Exception ex) {
-                    handleError(ex.getMessage());
+                    ApiHelper.handleError(ex.getMessage(), mErrorView, mProgress, mRecyclerView);
                 }
             }
 
             @Override
             public void onFailure(@Nullable Call<Result> call, @NonNull Throwable t) {
-                handleError("Api Failure: " + t.getMessage());
+                ApiHelper.handleError(t.getMessage(), mErrorView, mProgress, mRecyclerView);
             }
         });
     }
 
-    private void fillProducts() {
+    private void showProducts() {
+        int userId = SharedPrefManager.getInstance().getUser(getActivity()).getUserId();
+        for (Iterator<Product> iterator = productList.iterator(); iterator.hasNext();) {
+            Product product = iterator.next();
+            if (product.getUser().getUserId() == userId) iterator.remove();
+        }
         mAdapter = new ProductAdapter(getActivity(), productList);
         mAdapter.setOnItemClickListener(new ProductAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                Utils.setProductId(productList.get(position).getProductId());
+                Utils.setPosition(position);
                 Utils.switchContent(getActivity(), R.id.fragContainer, Tags.PRODUCT_DETAILS_FRAGMENT);
             }
         });
@@ -121,9 +130,13 @@ public class HomeFragment extends Fragment {
         mRecyclerView.setAdapter(mAdapter);
     }
 
-    private void handleError(String error) {
-        Utils.getUtils().showProgress(false, mProgress, mRecyclerView);
-        mErrorView.setText(error);
-        mErrorView.setVisibility(View.VISIBLE);
+    private void searchProducts(String productName){
+        Utils.hideKeyboard(getActivity());
+        for (Iterator<Product> iterator = productList.iterator(); iterator.hasNext();) {
+            Product product = iterator.next();
+            if (!product.getProductName().contains(productName)) iterator.remove();
+        }
+        CenterRepository.getCenterRepository().setListOfProducts(productList);
+        mAdapter.notifyDataSetChanged();
     }
 }

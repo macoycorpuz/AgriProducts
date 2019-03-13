@@ -16,8 +16,8 @@ public class CenterRepository {
 
     private List<Product> listOfProducts = Collections.synchronizedList(new ArrayList<Product>());
     private List<User> listOfUsers = Collections.synchronizedList(new ArrayList<User>());
+    private List<Deal> listOfDeals = Collections.synchronizedList(new ArrayList<Deal>());
     private List<Message> listOfMessages = Collections.synchronizedList(new ArrayList<Message>());
-    private Map<String, ArrayList<Message>> mapOfMessagesInDeal = new HashMap<>();
 
     public static CenterRepository getCenterRepository() {
 
@@ -51,11 +51,11 @@ public class CenterRepository {
         this.listOfMessages = listOfMessages;
     }
 
-    public Map<String, ArrayList<Message>> getMapOfMessagesInDeal() {
-        return mapOfMessagesInDeal;
+    public List<Deal> getListOfDeals() {
+        return listOfDeals;
     }
 
-    public void setMapOfMessagesInDeal(Map<String, ArrayList<Message>> mapOfMessagesInDeal) {
-        this.mapOfMessagesInDeal = mapOfMessagesInDeal;
+    public void setListOfDeals(List<Deal> listOfDeals) {
+        this.listOfDeals = listOfDeals;
     }
 }

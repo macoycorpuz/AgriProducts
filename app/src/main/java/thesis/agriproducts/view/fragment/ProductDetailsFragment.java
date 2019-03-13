@@ -1,81 +1,106 @@
 package thesis.agriproducts.view.fragment;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlacePicker;
+import com.google.android.gms.maps.model.LatLng;
 import com.squareup.picasso.Picasso;
 
-import okhttp3.internal.Util;
+import java.io.File;
+
+import id.zelory.compressor.Compressor;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import thesis.agriproducts.R;
 import thesis.agriproducts.domain.Api;
-import thesis.agriproducts.domain.ApiServices;
+import thesis.agriproducts.domain.ApiHelper;
+import thesis.agriproducts.model.CenterRepository;
 import thesis.agriproducts.model.entities.Deal;
-import thesis.agriproducts.model.entities.Message;
 import thesis.agriproducts.model.entities.Product;
 import thesis.agriproducts.model.entities.Result;
+import thesis.agriproducts.model.entities.User;
 import thesis.agriproducts.util.SharedPrefManager;
 import thesis.agriproducts.util.Tags;
 import thesis.agriproducts.util.Utils;
-import thesis.agriproducts.view.adapter.ProductAdapter;
 
 
-//TODO: (onCreateView) - Do not show make offer if already made an offer
-//TODO: (onBackPressed) - Implement on Back Pressed then go to fragment
-//TODO: (Delete Product) - Alert dialog and close fragment
 public class ProductDetailsFragment extends Fragment {
 
     //region Attributes
-    String content;
-    int productId, userId;
-    boolean isMyProduct;
-    View mView, mDetails;
-    TextView mProductName, mPrice, mQuantity, mLocation, mDescription, mErrorView;
+    String TAG = "Product Details Fragment";
+
+    View mView, mFormView, mFormEdit, mFormButtons;
+    TextView mProductName, mPrice, mSeller, mQuantity, mStatus, mLocation, mDescription, mErrorView;
+    EditText mEditProductName, mEditLocation, mEditPrice, mEditQuantity, mEditUnit, mEditDescription, mEditStatus;
     ImageView mImage;
-    ProgressBar mProgress;
+    Button mMakeOffer, mDelete, mEdit, mSave;
     ProgressDialog pDialog;
 
-    Product product;
-    Deal deal;
+    User user;
+    Product product, newProduct;
 
-    ApiServices api = Api.getInstance().getApiServices();
-    Call<Result> call;
+    int position = 0;
+    int PLACE_PICKER_REQUEST = 1;
+    LatLng location;
+    RequestBody productIdBody, productNameBody, descriptionBody, quantityBody, unitBody, priceBody, locationBody, latBody, lngBody, statusBody;
     //endregion
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mView = inflater.inflate(R.layout.fragment_product_details, container, false);
-        mDetails = mView.findViewById(R.id.viewDetails);
-        mProgress = mView.findViewById(R.id.progDetails);
-        mErrorView = mView.findViewById(R.id.txtProdDetailsError);
+        mFormView = mView.findViewById(R.id.formViewProduct);
+        mFormEdit = mView.findViewById(R.id.formEditProduct);
+        mFormButtons = mView.findViewById(R.id.formProductButtons);
+        mErrorView = mView.findViewById(R.id.txtEditError);
+
         mProductName = mView.findViewById(R.id.txtProdName);
         mPrice = mView.findViewById(R.id.txtProdPrice);
+        mSeller = mView.findViewById(R.id.txtProdSeller);
         mQuantity = mView.findViewById(R.id.txtProdQuantity);
+        mStatus = mView.findViewById(R.id.txtProdStatus);
         mLocation = mView.findViewById(R.id.txtProdLocation);
         mDescription = mView.findViewById(R.id.txtProdDescription);
         mImage = mView.findViewById(R.id.imgProduct);
-        Button mMakeOffer = mView.findViewById(R.id.btnMakeOffer);
-        Button mDelete = mView.findViewById(R.id.btnDeleteProduct);
+
+        mEditProductName = mView.findViewById(R.id.txtEditProductName);
+        mEditLocation = mView.findViewById(R.id.txtEditLocation);
+        mEditPrice = mView.findViewById(R.id.txtEditPrice);
+        mEditQuantity = mView.findViewById(R.id.txtEditQuantity);
+        mEditStatus = mView.findViewById(R.id.txtEditStatus);
+        mEditUnit = mView.findViewById(R.id.txtEditUnit);
+        mEditDescription = mView.findViewById(R.id.txtEditDescription);
+
+        mMakeOffer = mView.findViewById(R.id.btnMakeOffer);
+        mDelete = mView.findViewById(R.id.btnDeleteProduct);
+        mEdit = mView.findViewById(R.id.btnEditProduct);
+        mSave = mView.findViewById(R.id.btnSaveProduct);
         mMakeOffer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -88,60 +113,104 @@ public class ProductDetailsFragment extends Fragment {
                 deleteProduct();
             }
         });
+        mEdit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editProduct();
+            }
+        });
+        mSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                saveProduct();
+            }
+        });
 
-        if(isMyProduct) {
-            mMakeOffer.setVisibility(View.GONE);
-            mDelete.setVisibility(View.VISIBLE);
-        }
-
-        userId = SharedPrefManager.getInstance().getUser(getActivity()).getUserId();
+        Log.d(TAG, "onCreateView: position " + position);
+        product = CenterRepository.getCenterRepository().getListOfProducts().get(position);
+        showButton();
         showProduct();
         return mView;
     }
 
-    public void setProductId(int productId) {
-        this.productId = productId;
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(resultCode == Activity.RESULT_OK) {
+            if (requestCode == PLACE_PICKER_REQUEST) {
+                Place place = PlacePicker.getPlace(data, getActivity());
+                location = place.getLatLng();
+                mEditLocation.setText(place.getAddress().toString());
+            }
+        }
+
     }
 
-    public void setIsMyProduct(boolean isMyProduct) {this.isMyProduct = isMyProduct; }
+    public void openDestination() {
+        PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+        try {
+            Intent intent = builder.build(getActivity());
+            startActivityForResult(intent, PLACE_PICKER_REQUEST);
+        }
+        catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e){
+            e.printStackTrace();
+        }
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
+    }
+
+    private void showButton() {
+        user = SharedPrefManager.getInstance().getUser(getActivity());
+        Log.d(TAG, "showButton: accountId " + user.getAccountId());
+        if(user.getAccountId() == Tags.ADMIN) {
+            mMakeOffer.setVisibility(View.GONE);
+            mFormButtons.setVisibility(View.VISIBLE);
+        } else if(product.getUser().getUserId() == user.getUserId()) {
+            mMakeOffer.setVisibility(View.GONE);
+            mFormButtons.setVisibility(View.VISIBLE);
+            mEdit.setVisibility(View.VISIBLE);
+        } else {
+            mMakeOffer.setVisibility(View.VISIBLE);
+            mFormButtons.setVisibility(View.GONE);
+        }
+    }
 
     private void showProduct() {
-        Utils.getUtils().showProgress(true, mProgress, mDetails);
-        call = api.getProduct(productId);
-        call.enqueue(new Callback<Result>() {
-            @Override
-            public void onResponse(@Nullable Call<Result> call, @NonNull final Response<Result> response) {
-                try {
-                    Utils.getUtils().showProgress(false, mProgress, mDetails);
-                    if (response.errorBody() != null)
-                        throw new Exception(response.errorBody().string());
-                    if (response.body().getError())
-                        throw new Exception(response.body().getMessage());
-                    product = response.body().getProduct();
-                    fillDetails();
-                } catch (Exception ex) {
-                    handleError(ex.getMessage());
-                }
-            }
-
-            @Override
-            public void onFailure(@Nullable Call<Result> call, @NonNull Throwable t) {
-                handleError("Api Failure: " + t.getMessage());
-            }
-        });
+        mFormView.setVisibility(View.VISIBLE);
+        mFormEdit.setVisibility(View.GONE);
+        if(user.getAccountId() == Tags.USER) {
+            mEdit.setVisibility(View.VISIBLE);
+            mSave.setVisibility(View.GONE);
+        }
+        String price = "PHP " + String.valueOf(product.getPrice());
+        String quantity = String.valueOf(product.getQuantity() + product.getUnit());
+        mProductName.setText(product.getProductName());
+        mPrice.setText(price);
+        mStatus.setText(product.getStatus());
+        mSeller.setText(product.getUser().getName());
+        mQuantity.setText(quantity);
+        mLocation.setText(product.getLocation());
+        mDescription.setText(product.getDescription());
+        Picasso.get()
+                .load(product.getProductUrl())
+                .placeholder(R.drawable.ic_photo_light_blue_24dp)
+                .error(R.drawable.ic_error_outline_red_24dp)
+                .fit()
+                .centerCrop()
+                .into(mImage);
     }
 
     private void messageAlert() {
-        content = "I want to buy your product.";
         AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
-        EditText mMessage = new EditText (getActivity());
+        final EditText mMessage = new EditText (getActivity());
         mMessage.setHint("message");
-        mMessage.setText(content);
+        mMessage.setText("I want to buy your product.");
         alert.setTitle("Enter Message");
         alert.setView(mMessage);
         alert.setPositiveButton("Send", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                sendDeal();
+                setDeal(mMessage.getText().toString());
                 dialog.dismiss();
             }
         });
@@ -152,76 +221,149 @@ public class ProductDetailsFragment extends Fragment {
         alert.show();
     }
 
-    private void sendDeal() {
+    private void setDeal(String content) {
         pDialog = Utils.showProgressDialog(getActivity(), "Sending a deal...");
-        call = api.postDeal(productId, userId, content);
-        call.enqueue(new Callback<Result>() {
+        Api.getInstance().getServices().setDeal(product.getProductId(), user.getUserId(), content).enqueue(new Callback<Result>() {
             @Override
             public void onResponse(@Nullable Call<Result> call, @NonNull final Response<Result> response) {
                 try {
-                    Utils.getUtils().showProgress(false, mProgress, mDetails);
+                    Utils.dismissProgressDialog(pDialog);
                     if (response.errorBody() != null)
                         throw new Exception(response.errorBody().string());
                     if (response.body().getError())
                         throw new Exception(response.body().getMessage());
-                    Utils.dismissProgressDialog(pDialog);
                     Utils.switchContent(getActivity(), R.id.fragContainer, Tags.HOME_FRAGMENT);
-                    Toast.makeText(getActivity(), "Message sent", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), response.body().getMessage(), Toast.LENGTH_LONG).show();
                 } catch (Exception ex) {
-                    handleError(ex.getMessage());
+                    ApiHelper.handleError(ex.getMessage(), mErrorView, pDialog);
                 }
             }
 
             @Override
             public void onFailure(@Nullable Call<Result> call, @NonNull Throwable t) {
-                handleError("Api Failure: " + t.getMessage());
+                Utils.dismissProgressDialog(pDialog);
+                Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }
 
     private void deleteProduct() {
         pDialog = Utils.showProgressDialog(getActivity(), "Deleting product...");
-        ApiServices api = Api.getInstance().getApiServices();
-        Call<Result> call = api.deleteProduct(productId);
-        call.enqueue(new Callback<Result>() {
+        Api.getInstance().getServices().deleteProduct(product.getProductId()).enqueue(new Callback<Result>() {
             @Override
             public void onResponse(@Nullable Call<Result> call, @NonNull final Response<Result> response) {
                 try {
-                    Utils.getUtils().showProgress(false, mProgress, mDetails);
+                    Utils.dismissProgressDialog(pDialog);
                     if (response.errorBody() != null)
                         throw new Exception(response.errorBody().string());
                     if (response.body().getError())
                         throw new Exception(response.body().getMessage());
-                    Toast.makeText(getActivity(), "Product has been deleted.", Toast.LENGTH_LONG).show();
+//                    Utils.switchContent(getActivity(), R.id.fragContainer, Tags.HOME_FRAGMENT);
+                    Toast.makeText(getActivity(), response.body().getMessage(), Toast.LENGTH_LONG).show();
                 } catch (Exception ex) {
-                    handleError(ex.getMessage());
+                    ApiHelper.handleError(ex.getMessage(), mErrorView, pDialog);
                 }
             }
 
             @Override
             public void onFailure(@Nullable Call<Result> call, @NonNull Throwable t) {
-                handleError("Api Failure: " + t.getMessage());
+                Utils.dismissProgressDialog(pDialog);
+                Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }
 
-    private void fillDetails() {
-        mProductName.setText(product.getProductName());
-        mPrice.setText(String.valueOf(product.getPrice()));
-        mQuantity.setText(String.valueOf(product.getQuantity()));
-        mLocation.setText(product.getLocation());
-        mDescription.setText(product.getDescription());
-        Picasso.get()
-                .load(product.getProductUrl())
-                .placeholder(R.drawable.ic_photo_light_blue_24dp)
-                .error(R.drawable.ic_error_outline_red_24dp)
-                .into(mImage);
+    private void editProduct() {
+        mEditLocation.setInputType(InputType.TYPE_NULL);
+        mEditLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openDestination();
+            }
+        });
+        mEditLocation.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) { openDestination(); }
+        });
+        mEditProductName.setText(product.getProductName());
+        mEditLocation.setText(product.getLocation());
+        mEditPrice.setText(String.valueOf(product.getPrice()));
+        mEditQuantity.setText(String.valueOf(product.getQuantity()));
+        mEditUnit.setText(product.getUnit());
+        mEditDescription.setText(product.getDescription());
+        mEditStatus.setText(product.getStatus());
+        location = new LatLng(product.getLat(), product.getLng());
+
+        mFormView.setVisibility(View.GONE);
+        mFormEdit.setVisibility(View.VISIBLE);
+        mEdit.setVisibility(View.GONE);
+        mSave.setVisibility(View.VISIBLE);
     }
 
-    private void handleError(String error) {
-        Utils.dismissProgressDialog(pDialog);
-        Utils.getUtils().showProgress(false, mProgress, mDetails);
-        mErrorView.setText(error);
-        mErrorView.setVisibility(View.VISIBLE);
+    private void saveProduct() {
+        if(!authenticate()) return;
+        parseRequestBody();
+        pDialog = Utils.showProgressDialog(getActivity(), "Updating your product...");
+        parseRequestBody();
+        Api.getInstance().getServices().updateProduct(productIdBody, productNameBody, descriptionBody, quantityBody, unitBody, priceBody, locationBody, latBody, lngBody, statusBody).enqueue(new Callback<Result>() {
+            @Override
+            public void onResponse(@Nullable Call<Result> call, @NonNull Response<Result> response) {
+                try {
+                    Utils.dismissProgressDialog(pDialog);
+                    if (response.errorBody() != null)
+                        throw new Exception(response.errorBody().string());
+                    if (response.body().getError())
+                        throw new Exception(response.body().getMessage());
+                    Toast.makeText(getActivity(), response.body().getMessage(), Toast.LENGTH_LONG).show();
+                    showProduct();
+                } catch (Exception ex) {
+                    ApiHelper.handleError(ex.getMessage(), mErrorView, pDialog);
+                }
+            }
+
+            @Override
+            public void onFailure(@Nullable Call<Result> call, @NonNull Throwable t) {
+                Utils.dismissProgressDialog(pDialog);
+                Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private boolean authenticate() {
+        mErrorView.setVisibility(View.GONE);
+        Utils.hideKeyboard(getActivity());
+        newProduct = new Product(
+                mEditProductName.getText().toString(),
+                mEditDescription.getText().toString(),
+                Double.valueOf(mEditQuantity.getText().toString()),
+                mEditUnit.getText().toString(),
+                Double.valueOf(mEditPrice.getText().toString()),
+                mEditLocation.getText().toString(),
+                location.latitude,
+                location.longitude,
+                mEditStatus.getText().toString()
+
+        );
+        newProduct.setProductId(product.getProductId());
+
+        if (!Utils.isEmptyFields(product.getProductName(), product.getDescription(), mEditQuantity.getText().toString(), mEditUnit.getText().toString(), mEditPrice.getText().toString(), mEditLocation.getText().toString())) {
+            mErrorView.setText(R.string.error_sell_product);
+            mErrorView.setVisibility(View.VISIBLE);
+            return false;
+        }
+        return true;
+    }
+
+    private void parseRequestBody() {
+        productIdBody = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(newProduct.getProductId()));
+        productNameBody = RequestBody.create(MediaType.parse("text/plain"), newProduct.getProductName());
+        descriptionBody = RequestBody.create(MediaType.parse("text/plain"), newProduct.getDescription());
+        quantityBody = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(newProduct.getQuantity()));
+        unitBody = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(newProduct.getUnit()));
+        priceBody = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(newProduct.getPrice()));
+        locationBody = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(newProduct.getLocation()));
+        latBody = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(newProduct.getLat()));
+        lngBody = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(newProduct.getLng()));
+        statusBody = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(newProduct.getStatus()));
     }
 }

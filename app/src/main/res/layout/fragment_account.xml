@@ -29,38 +29,140 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/txtUserName"
+            <LinearLayout
+                android:id="@+id/formViewAccount"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/fragment_vertical_margin"
-                android:textStyle="bold"
-                android:textSize="@dimen/edit_text_font_size"
-                android:text="@string/prompt_name"/>
-            <TextView
-                android:id="@+id/txtUserEmail"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/txtUserName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/fragment_vertical_margin"
+                    android:textStyle="bold"
+                    android:textSize="@dimen/edit_text_font_size"
+                    android:text="@string/prompt_name"/>
+                <TextView
+                    android:id="@+id/txtUserEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/fragment_vertical_margin"
+                    android:textStyle="bold"
+                    android:textSize="@dimen/edit_text_font_size"
+                    android:text="@string/prompt_email"/>
+                <TextView
+                    android:id="@+id/txtUserNumber"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/fragment_vertical_margin"
+                    android:textStyle="bold"
+                    android:textSize="@dimen/edit_text_font_size"
+                    android:text="@string/prompt_mobile_number"/>
+                <TextView
+                    android:id="@+id/txtUserAddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/fragment_vertical_margin"
+                    android:textStyle="bold"
+                    android:textSize="@dimen/edit_text_font_size"
+                    android:text="@string/prompt_address"/>
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/formEditAccount"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/fragment_vertical_margin"
-                android:textStyle="bold"
-                android:textSize="@dimen/edit_text_font_size"
-                android:text="@string/prompt_email"/>
-            <TextView
-                android:id="@+id/txtUserNumber"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/txtEditUserError"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textColor="@color/colorError"
+                    android:visibility="gone"/>
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:id="@+id/txtEditUserName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/prompt_name"
+                        android:inputType="text"
+                        android:maxLines="1"
+                        android:singleLine="true" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:id="@+id/txtEditUserEmail"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/prompt_email"
+                        android:inputType="textEmailAddress"
+                        android:maxLines="1"
+                        android:singleLine="true" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/txtEditUserNumber"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/prompt_mobile_number"
+                        android:inputType="number"
+                        android:maxLines="1"
+                        android:singleLine="true" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/txtEditUserAddress"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/prompt_address"
+                        android:maxLines="3"
+                        android:singleLine="false"/>
+
+                </android.support.design.widget.TextInputLayout>
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnEditUser"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/fragment_vertical_margin"
-                android:textStyle="bold"
-                android:textSize="@dimen/edit_text_font_size"
-                android:text="@string/prompt_mobile_number"/>
-            <TextView
-                android:id="@+id/txtUserAddress"
+                android:layout_marginTop="@dimen/btn_vertical_margin"
+                android:text="@string/action_edit_user"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btnSaveUser"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/fragment_vertical_margin"
+                android:layout_marginTop="@dimen/btn_vertical_margin"
+                android:text="@string/action_save_user"
                 android:textStyle="bold"
-                android:textSize="@dimen/edit_text_font_size"
-                android:text="@string/prompt_address"/>
+                android:visibility="gone"/>
 
             <Button
                 android:id="@+id/btnChangePassowrd"
@@ -79,7 +181,6 @@
                 android:textStyle="bold" />
 
         </LinearLayout>
-
 
     </ScrollView>
 

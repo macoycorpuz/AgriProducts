@@ -3,6 +3,8 @@ package thesis.agriproducts.view.adapter;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableString;
+import android.text.style.RelativeSizeSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +30,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     @Override
     public ProductViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(mCtx);
-        View view = inflater.inflate(R.layout.item_product, null);
+        View view = inflater.inflate(R.layout.item_product, parent, false);
         return new ProductViewHolder(view);
     }
 
@@ -36,15 +38,18 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     public void onBindViewHolder(@NonNull ProductViewHolder holder, int position) {
         Product product = productList.get(position);
 
+        String price = "PHP " + product.getPrice();
         holder.txtName.setText(product.getProductName());
         holder.txtLocation.setText(product.getLocation());
-        holder.txtStatus.setText(String.valueOf(product.getStatus()));
-        holder.txtPrice.setText(String.valueOf(product.getPrice()));
+        holder.txtSeller.setText(product.getUser().getName());
+        holder.txtPrice.setText(price);
 
         Picasso.get()
                 .load(product.getProductUrl())
                 .placeholder(R.drawable.ic_photo_light_blue_24dp)
                 .error(R.drawable.ic_error_outline_red_24dp)
+                .fit()
+                .centerCrop()
                 .into(holder.imgProd);
     }
 
@@ -63,14 +68,14 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
 
     class ProductViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        TextView txtName, txtLocation, txtStatus, txtPrice;
+        TextView txtName, txtSeller, txtLocation, txtPrice;
         ImageView imgProd;
         private ProductViewHolder(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
             txtName = itemView.findViewById(R.id.txtItemProductName);
             txtLocation = itemView.findViewById(R.id.txtItemProductLocation);
-            txtStatus = itemView.findViewById(R.id.txtItemProductStatus);
+            txtSeller = itemView.findViewById(R.id.txtItemProductSeller);
             txtPrice = itemView.findViewById(R.id.txtItemProductPrice);
             imgProd = itemView.findViewById(R.id.imgItemProductThumb);
         }

@@ -1,24 +1,25 @@
 package thesis.agriproducts.model.entities;
 
-import com.google.gson.annotations.SerializedName;
+import com.google.gson.annotations.Expose;
 
 public class Message {
 
-    @SerializedName("messageId")
+    @Expose
     private int messageId;
-    @SerializedName("dealId")
+    @Expose
     private int dealId;
-    @SerializedName("userId")
+    @Expose
     private int userId;
-    @SerializedName("content")
+    @Expose
     private String content;
-    @SerializedName("time")
+    @Expose
     private String time;
 
-    public Message(int dealId, int userId, String content) {
+    public Message(int dealId, int userId, String content, String time) {
         this.dealId = dealId;
         this.userId = userId;
         this.content = content;
+        this.time = time;
     }
 
     public int getMessageId() {

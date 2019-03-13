@@ -20,10 +20,14 @@
         android:id="@+id/navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?android:attr/windowBackground"
-        app:labelVisibilityMode="labeled"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:menu="@menu/navigation" />
+        app:labelVisibilityMode="labeled"
+        app:menu="@menu/navigation"
 
+        app:itemBackground="@drawable/bg"
+        app:itemIconTint="@color/colorBlack"
+        app:itemTextColor="@color/colorBlack"/>
+
+    <!--android:background="?android:attr/windowBackground"-->
 </android.support.constraint.ConstraintLayout>

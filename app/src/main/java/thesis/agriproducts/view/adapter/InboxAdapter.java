@@ -12,16 +12,20 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 import thesis.agriproducts.R;
 import thesis.agriproducts.model.entities.Deal;
+import thesis.agriproducts.model.entities.Message;
+import thesis.agriproducts.util.Tags;
 
 public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.InboxViewHolder> {
 
     private Context mCtx;
     private List<Deal> dealList;
+    private int dealFlag;
     private static OnItemClickListener clickListener;
 
-    public InboxAdapter(Context mCtx, List<Deal> dealList) {
+    public InboxAdapter(Context mCtx, List<Deal> dealList, int dealFlag) {
         this.mCtx = mCtx;
         this.dealList = dealList;
+        this.dealFlag = dealFlag;
     }
 
     @NonNull
@@ -35,10 +39,11 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.InboxViewHol
     @Override
     public void onBindViewHolder(@NonNull InboxViewHolder holder, int position) {
         Deal deal = dealList.get(position);
-        holder.txtSender.setText(deal.getName());
-        holder.txtProduct.setText(deal.getProductName());
+        if(dealFlag == Tags.BUYING_FLAG) holder.txtSender.setText(deal.getProduct().getUser().getName());
+        if(dealFlag == Tags.SELLING_FLAG) holder.txtSender.setText(deal.getUser().getName());
+        holder.txtProduct.setText(deal.getProduct().getProductName());
         Picasso.get()
-                .load(deal.getProductUrl())
+                .load(deal.getProduct().getProductUrl())
                 .placeholder(R.drawable.ic_photo_light_blue_24dp)
                 .error(R.drawable.ic_error_outline_red_24dp)
                 .into(holder.imgInboxThumb);

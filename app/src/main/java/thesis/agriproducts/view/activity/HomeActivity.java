@@ -1,6 +1,5 @@
 package thesis.agriproducts.view.activity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -8,7 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.WindowManager;
 import thesis.agriproducts.R;
-import thesis.agriproducts.util.SharedPrefManager;
 import thesis.agriproducts.util.Tags;
 import thesis.agriproducts.util.Utils;
 
@@ -17,20 +15,21 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        checkUserLoggedIn();
 
         setContentView(R.layout.activity_home);
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+        Utils.switchContent(this, R.id.fragContainer, Tags.HOME_FRAGMENT);
     }
 
-    private void checkUserLoggedIn() {
-        if(SharedPrefManager.getInstance().isLoggedIn(getApplicationContext()))
-            Utils.switchContent(HomeActivity.this, R.id.fragContainer, Tags.HOME_FRAGMENT);
-        else {
-            finish();
-            startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+    @Override
+    public void onBackPressed() {
+        int count = getFragmentManager().getBackStackEntryCount();
+        if (count == 0) {
+            super.onBackPressed();
+        } else {
+            getFragmentManager().popBackStack();
         }
     }
 

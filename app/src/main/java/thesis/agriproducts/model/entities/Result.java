@@ -1,34 +1,29 @@
 package thesis.agriproducts.model.entities;
 
-import com.google.gson.annotations.SerializedName;
+import com.google.gson.annotations.Expose;
 import java.util.List;
 
 public class Result {
 
-    @SerializedName("error")
+    @Expose
     private Boolean error = false;
-    @SerializedName("message")
+    @Expose
     private String message;
-    @SerializedName("isAdmin")
-    private Boolean isAdmin = false;
-    @SerializedName("user")
+    
+    @Expose
     private User user;
-    @SerializedName("product")
+    @Expose
     private Product product;
-    @SerializedName("users")
+    @Expose
     private List<User> users;
-    @SerializedName("products")
+    @Expose
     private List<Product> products;
-    @SerializedName("deals")
+    @Expose
     private List<Deal> deals;
-    @SerializedName("messages")
+    @Expose
     private List<Message> messages;
 
     public Result() {
-    }
-
-    public Boolean getIsAdmin() {
-        return isAdmin;
     }
 
     public Boolean getError() {

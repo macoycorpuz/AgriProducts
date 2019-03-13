@@ -19,25 +19,27 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import thesis.agriproducts.R;
 import thesis.agriproducts.domain.Api;
-import thesis.agriproducts.domain.ApiServices;
+import thesis.agriproducts.domain.ApiHelper;
+import thesis.agriproducts.model.CenterRepository;
 import thesis.agriproducts.model.entities.Result;
 import thesis.agriproducts.model.entities.User;
 import thesis.agriproducts.util.Tags;
 import thesis.agriproducts.util.Utils;
 import thesis.agriproducts.view.activity.AdminActivity;
+import thesis.agriproducts.view.activity.SignUpActivity;
 
 public class UserDetailsFragment extends Fragment {
 
     //region Attributes
-    ApiServices api = Api.getInstance().getApiServices();
-    Call<Result> call;
-    int userId;
+    String TAG = "User Details Fragment";
+    int position;
     User user;
 
     View mView;
     TextView mName, mEmail, mNumber, mAddress, mActivate, mErrorView;
     ImageView mImage;
     ProgressDialog pDialog;
+    Button mActivateBtn;
     //endregion
 
     @Override
@@ -51,9 +53,9 @@ public class UserDetailsFragment extends Fragment {
         mActivate = mView.findViewById(R.id.txtUserDetailActivate);
         mImage = mView.findViewById(R.id.imgUser);
 
-        Button mActivate = mView.findViewById(R.id.btnActivateUser);
+        mActivateBtn = mView.findViewById(R.id.btnActivateUser);
         Button mDelete = mView.findViewById(R.id.btnDeleteUser);
-        mActivate.setOnClickListener(new View.OnClickListener() {
+        mActivateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 activateUser();
@@ -66,65 +68,33 @@ public class UserDetailsFragment extends Fragment {
             }
         });
 
+        user = CenterRepository.getCenterRepository().getListOfUsers().get(position);
         showUser();
         return mView;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setPosition(int position) {
+        this.position = position;
     }
 
     private void showUser() {
-        call = api.getUser(userId);
-        call.enqueue(new Callback<Result>() {
-            @Override
-            public void onResponse(@Nullable Call<Result> call, @NonNull final Response<Result> response) {
-                try {
-                    if (response.errorBody() != null)
-                        throw new Exception(response.errorBody().string());
-                    if (response.body().getError())
-                        throw new Exception(response.body().getMessage());
-                    user = response.body().getUser();
-                    fillDetails();
-                } catch (Exception ex) {
-                    handleError(ex.getMessage());
-                }
-            }
-
-            @Override
-            public void onFailure(@Nullable Call<Result> call, @NonNull Throwable t) {
-                handleError("Api Failure: " + t.getMessage());
-            }
-        });
+        mName.setText(user.getName());
+        mEmail.setText(String.valueOf(user.getEmail()));
+        mNumber.setText(String.valueOf(user.getNumber()));
+        mAddress.setText(user.getAddress());
+        mActivate.setText(user.getActivated() ? "Activated" : "Inactive");
+        Picasso.get()
+                .load(user.getUrl())
+                .placeholder(R.drawable.ic_photo_light_blue_24dp)
+                .error(R.drawable.ic_error_outline_red_24dp)
+                .fit().centerCrop()
+                .into(mImage);
+        mActivateBtn.setEnabled(!user.getActivated());
     }
 
     private void activateUser() {
-        call = api.activate(userId);
-        call.enqueue(new Callback<Result>() {
-            @Override
-            public void onResponse(@Nullable Call<Result> call, @NonNull final Response<Result> response) {
-                try {
-                    if (response.errorBody() != null)
-                        throw new Exception(response.errorBody().string());
-                    if (response.body().getError())
-                        throw new Exception(response.body().getMessage());
-                    mActivate.setText("Activated");
-                    Toast.makeText(getActivity(), "User has been activated", Toast.LENGTH_LONG).show();
-                } catch (Exception ex) {
-                    handleError(ex.getMessage());
-                }
-            }
-            @Override
-            public void onFailure(@Nullable Call<Result> call, @NonNull Throwable t) {
-                handleError("Api Failure: " + t.getMessage());
-            }
-        });
-    }
-
-    private void deleteUser() {
-        pDialog = Utils.showProgressDialog(getActivity(), "Deleting product...");
-        call = api.deleteUser(userId);
-        call.enqueue(new Callback<Result>() {
+        pDialog = Utils.showProgressDialog(getActivity(), "Activating User...");
+        Api.getInstance().getServices().activateUser(user.getUserId()).enqueue(new Callback<Result>() {
             @Override
             public void onResponse(@Nullable Call<Result> call, @NonNull final Response<Result> response) {
                 try {
@@ -133,36 +103,44 @@ public class UserDetailsFragment extends Fragment {
                         throw new Exception(response.errorBody().string());
                     if (response.body().getError())
                         throw new Exception(response.body().getMessage());
-                    Utils.switchContentAdmin(getActivity(), R.id.adminContainer, Tags.USERS_FRAGMENT);
-                    Toast.makeText(getActivity(), "User has been deleted.", Toast.LENGTH_LONG).show();
+                    mActivate.setText("Activated");
+                    mActivateBtn.setEnabled(false);
+                    Toast.makeText(getActivity(), response.body().getMessage(), Toast.LENGTH_LONG).show();
                 } catch (Exception ex) {
-                    handleError(ex.getMessage());
+                    ApiHelper.handleError(ex.getMessage(), mErrorView, pDialog);
+                }
+            }
+            @Override
+            public void onFailure(@Nullable Call<Result> call, @NonNull Throwable t) {
+                Utils.dismissProgressDialog(pDialog);
+                Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void deleteUser() {
+        pDialog = Utils.showProgressDialog(getActivity(), "Deleting product...");
+        Api.getInstance().getServices().deleteUser(user.getUserId()).enqueue(new Callback<Result>() {
+            @Override
+            public void onResponse(@Nullable Call<Result> call, @NonNull final Response<Result> response) {
+                try {
+                    Utils.dismissProgressDialog(pDialog);
+                    if (response.errorBody() != null)
+                        throw new Exception(response.errorBody().string());
+                    if (response.body().getError())
+                        throw new Exception(response.body().getMessage());
+                    Utils.switchContent(getActivity(), R.id.adminContainer, Tags.USERS_FRAGMENT);
+                    Toast.makeText(getActivity(), response.body().getMessage(), Toast.LENGTH_LONG).show();
+                } catch (Exception ex) {
+                    ApiHelper.handleError(ex.getMessage(), mErrorView, pDialog);
                 }
             }
 
             @Override
             public void onFailure(@Nullable Call<Result> call, @NonNull Throwable t) {
-                handleError("Api Failure: " + t.getMessage());
+                Utils.dismissProgressDialog(pDialog);
+                Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
-    }
-
-    private void fillDetails() {
-        mName.setText(user.getName());
-        mEmail.setText(String.valueOf(user.getEmail()));
-        mNumber.setText(String.valueOf(user.getNumber()));
-        mAddress.setText(user.getAddress());
-        mActivate.setText(user.getIsActivated() ? "Activated" : "Inactive");
-        Picasso.get()
-                .load(user.getUrl())
-                .placeholder(R.drawable.ic_photo_light_blue_24dp)
-                .error(R.drawable.ic_error_outline_red_24dp)
-                .into(mImage);
-    }
-
-    private void handleError(String error) {
-        Utils.dismissProgressDialog(pDialog);
-        mErrorView.setText(error);
-        mErrorView.setVisibility(View.VISIBLE);
     }
 }

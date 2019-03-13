@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,13 +17,15 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.Iterator;
 import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import thesis.agriproducts.R;
 import thesis.agriproducts.domain.Api;
-import thesis.agriproducts.domain.ApiServices;
+import thesis.agriproducts.domain.ApiHelper;
+import thesis.agriproducts.model.CenterRepository;
 import thesis.agriproducts.model.entities.Product;
 import thesis.agriproducts.model.entities.Result;
 import thesis.agriproducts.util.SharedPrefManager;
@@ -59,62 +62,58 @@ public class MyProductsFragment extends Fragment {
             }
         });
         userId = SharedPrefManager.getInstance().getUser(getActivity()).getUserId();
-        showProducts();
+        fetchProducts();
         return mView;
     }
 
-    private void showProducts() {
-        try {
-            mRecyclerView.setAdapter(null);
-            mErrorView.setVisibility(View.GONE);
-            mSwipeRefreshLayout.setRefreshing(false);
-
-            Utils.getUtils().showProgress(true, mProgress, mRecyclerView);
-            ApiServices api = Api.getInstance().getApiServices();
-            Call<Result> call = api.getMyProducts(userId);
-            call.enqueue(new Callback<Result>() {
-                @Override
-                public void onResponse(@Nullable Call<Result> call, @NonNull final Response<Result> response) {
-                    try {
-                        Utils.getUtils().showProgress(false, mProgress, mRecyclerView);
-                        if (response.errorBody() != null)
-                            throw new Exception(response.errorBody().string());
-                        if (response.body().getError())
-                            throw new Exception(response.body().getMessage());
-                        productList = response.body().getProducts();
-                        fillProducts();
-                    } catch (Exception ex) {
-                        handleError(ex.getMessage());
-                    }
-                }
-
-                @Override
-                public void onFailure(@Nullable Call<Result> call, @NonNull Throwable t) {
-                    handleError("Api Failure: " + t.getMessage());
-                }
-            });
-        } catch (Exception ex) {
-            Toast.makeText(getActivity(), ex.getMessage(), Toast.LENGTH_LONG).show();
-        }
+    private void clearViews() {
+        mRecyclerView.setAdapter(null);
+        mErrorView.setVisibility(View.GONE);
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 
-    private void fillProducts() {
+    private void fetchProducts() {
+        clearViews();
+        Utils.showProgress(true, mProgress, mRecyclerView);
+        Api.getInstance().getServices().getProducts().enqueue(new Callback<Result>() {
+            @Override
+            public void onResponse(@Nullable Call<Result> call, @NonNull final Response<Result> response) {
+                try {
+                    Utils.showProgress(false, mProgress, mRecyclerView);
+                    if (response.errorBody() != null)
+                        throw new Exception(response.errorBody().string());
+                    if (response.body().getError())
+                        throw new Exception(response.body().getMessage());
+                    productList = response.body().getProducts();
+                    showProducts();
+                } catch (Exception ex) {
+                    ApiHelper.handleError(ex.getMessage(), mErrorView, mProgress, mRecyclerView);
+                }
+            }
+
+            @Override
+            public void onFailure(@Nullable Call<Result> call, @NonNull Throwable t) {
+                ApiHelper.handleError(t.getMessage(), mErrorView, mProgress, mRecyclerView);
+            }
+        });
+    }
+
+    private void showProducts() {
+        int userId = SharedPrefManager.getInstance().getUser(getActivity()).getUserId();
+        for (Iterator<Product> iterator = productList.iterator(); iterator.hasNext();) {
+            Product product = iterator.next();
+            if (product.getUser().getUserId() != userId) iterator.remove();
+        }
+        CenterRepository.getCenterRepository().setListOfProducts(productList);
         mAdapter = new ProductAdapter(getActivity(), productList);
         mAdapter.setOnItemClickListener(new ProductAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                Utils.setProductId(productList.get(position).getProductId());
-                Utils.setIsMyProduct(true);
+                Utils.setPosition(position);
                 Utils.switchContent(getActivity(), R.id.fragContainer, Tags.PRODUCT_DETAILS_FRAGMENT);
             }
         });
 
         mRecyclerView.setAdapter(mAdapter);
-    }
-
-    private void handleError(String error) {
-        Utils.getUtils().showProgress(false, mProgress, mRecyclerView);
-        mErrorView.setText(error);
-        mErrorView.setVisibility(View.VISIBLE);
     }
 }

@@ -17,10 +17,20 @@ public class AdminActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin);
 
-        Utils.switchContentAdmin(AdminActivity.this, R.id.adminContainer, Tags.USERS_FRAGMENT);
+        Utils.switchContent(AdminActivity.this, R.id.adminContainer, Tags.USERS_FRAGMENT);
         BottomNavigationView navigation = findViewById(R.id.adminNavigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+    }
+
+    @Override
+    public void onBackPressed() {
+        int count = getFragmentManager().getBackStackEntryCount();
+        if (count == 0) {
+            super.onBackPressed();
+        } else {
+            getFragmentManager().popBackStack();
+        }
     }
 
     //region Navigation Listener
@@ -31,13 +41,13 @@ public class AdminActivity extends AppCompatActivity {
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_users:
-                    Utils.switchContentAdmin(AdminActivity.this, R.id.adminContainer, Tags.USERS_FRAGMENT);
+                    Utils.switchContent(AdminActivity.this, R.id.adminContainer, Tags.USERS_FRAGMENT);
                     return true;
                 case R.id.navigation_products:
-                    Utils.switchContentAdmin(AdminActivity.this, R.id.adminContainer, Tags.PRODUCTS_FRAGMENT);
+                    Utils.switchContent(AdminActivity.this, R.id.adminContainer, Tags.PRODUCTS_FRAGMENT);
                     return true;
                 case R.id.navigation_admin_account:
-                    Utils.switchContentAdmin(AdminActivity.this, R.id.adminContainer, Tags.ACCOUNT_ADMIN_FRAGMENT);
+                    Utils.switchContent(AdminActivity.this, R.id.adminContainer, Tags.ACCOUNT_ADMIN_FRAGMENT);
                     return true;
             }
             return false;

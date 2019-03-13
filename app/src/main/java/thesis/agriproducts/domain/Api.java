@@ -10,7 +10,7 @@ public class Api {
     private static Api instance = null;
 
     // Keep your services here, build them in buildRetrofit method later
-    private ApiServices apiServices;
+    private Services services;
 
     public static Api getInstance() {
         if (instance == null) {
@@ -25,15 +25,15 @@ public class Api {
                 .setLenient()
                 .create();
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(ApiServices.MAIN_URL)
+                .baseUrl(Services.MAIN_URL)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
 
         // Build your services once
-        this.apiServices = retrofit.create(ApiServices.class);
+        this.services = retrofit.create(Services.class);
     }
 
-    public ApiServices getApiServices() {
-        return this.apiServices;
+    public Services getServices() {
+        return this.services;
     }
 }

@@ -21,18 +21,4 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
-
-    <!--<style name="AppTheme.ActionBar" parent="Widget.AppCompat.Light.ActionBar">-->
-    <!--<item name="android:titleTextStyle">@style/AppTheme.ActionBar.TitleText</item>-->
-    <!--<item name="titleTextStyle">@style/AppTheme.ActionBar.TitleText</item>-->
-    <!--<item name="android:height">@dimen/bar_height</item>-->
-    <!--<item name="height">@dimen/bar_height</item>-->
-    <!--</style>-->
-
-    <!--<style name="AppTheme.ActionBar.TitleText" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">-->
-    <!--<item name="android:textSize">@dimen/bar_text_size</item>-->
-    <!--<item name="android:textColor">@color/colorBlack</item>-->
-    <!--<item name="android:layout_gravity">center</item>-->
-    <!--</style>-->
-
 </resources>

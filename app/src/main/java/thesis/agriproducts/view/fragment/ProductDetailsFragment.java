@@ -125,6 +125,12 @@ public class ProductDetailsFragment extends Fragment {
                 saveProduct();
             }
         });
+        mSeller.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getActivity(), "Clicked", Toast.LENGTH_LONG).show();
+            }
+        });
 
         Log.d(TAG, "onCreateView: position " + position);
         product = CenterRepository.getCenterRepository().getListOfProducts().get(position);
@@ -197,7 +203,7 @@ public class ProductDetailsFragment extends Fragment {
                 .placeholder(R.drawable.ic_photo_light_blue_24dp)
                 .error(R.drawable.ic_error_outline_red_24dp)
                 .fit()
-                .centerCrop()
+                .centerInside()
                 .into(mImage);
     }
 

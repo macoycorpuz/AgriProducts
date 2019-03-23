@@ -105,6 +105,10 @@ public class MyProductsFragment extends Fragment {
             if (product.getUser().getUserId() != userId) iterator.remove();
         }
         CenterRepository.getCenterRepository().setListOfProducts(productList);
+        if(productList.size() < 1) {
+            mErrorView.setText("No product(s) found");
+            mErrorView.setVisibility(View.VISIBLE);
+        }
         mAdapter = new ProductAdapter(getActivity(), productList);
         mAdapter.setOnItemClickListener(new ProductAdapter.OnItemClickListener() {
             @Override

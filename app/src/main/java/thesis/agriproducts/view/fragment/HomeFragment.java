@@ -1,11 +1,14 @@
 package thesis.agriproducts.view.fragment;
 
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -70,7 +73,7 @@ public class HomeFragment extends Fragment{
     String[] items = new String[]{"Filter Products", "Price: Low to High", "Price: High to Low", "Nearest"};
     Location currentLocation;
 
-    FusedLocationProviderClient fusedLocationProviderClient;
+    FusedLocationProviderClient fusedLocationClient;
     //endregion
 
     @Override
@@ -122,6 +125,8 @@ public class HomeFragment extends Fragment{
         mFilter.setAdapter(adapter);
         fetchProducts();
 
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
         return mView;
     }
 
@@ -202,27 +207,59 @@ public class HomeFragment extends Fragment{
     private void sortNearest() {
         Log.d(TAG, "sortCheapest: Sort Nearest");
         if(productList == null) return;
-        if(currentLocation == null) {
-            Toast.makeText(getActivity(), "Invalid location. Turn on GPS.", Toast.LENGTH_LONG).show();
-            return;
+        if (ContextCompat.checkSelfPermission( getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION ) != PackageManager.PERMISSION_GRANTED ) {
+
         }
-        Collections.sort(productList, new Comparator<Product>(){
-            @Override
-            public int compare(Product o1, Product o2) {
-                Location loc1 = new Location("Loc1");
-                loc1.setLatitude(o1.getLat());
-                loc1.setLongitude(o1.getLng());
+        fusedLocationClient.getLastLocation()
+                .addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        if (location != null) {
+                            currentLocation = location;
+                            Log.d(TAG, "onSuccess: " + location.getLatitude());
+                            Collections.sort(productList, new Comparator<Product>(){
+                                @Override
+                                public int compare(Product o1, Product o2) {
+                                    Location loc1 = new Location("Loc1");
+                                    loc1.setLatitude(o1.getLat());
+                                    loc1.setLongitude(o1.getLng());
 
-                Location loc2 = new Location("Loc2");
-                loc2.setLatitude(o1.getLat());
-                loc2.setLongitude(o1.getLng());
+                                    Location loc2 = new Location("Loc2");
+                                    loc2.setLatitude(o1.getLat());
+                                    loc2.setLongitude(o1.getLng());
 
-                double dist1 = loc1.distanceTo(currentLocation);
-                double dist2 = loc2.distanceTo(currentLocation);
-                return Double.valueOf(dist2).compareTo(dist1);
-            }
-        });
-        mAdapter.notifyDataSetChanged();
+                                    double dist1 = loc1.distanceTo(currentLocation);
+                                    double dist2 = loc2.distanceTo(currentLocation);
+                                    Log.d(TAG, "compare: 1 " + dist1);
+                                    Log.d(TAG, "compare: 2 " + dist2);
+                                    return Double.valueOf(dist2).compareTo(dist1);
+                                }
+                            });
+                            mAdapter.notifyDataSetChanged();
+                        }
+                        else {
+                            Toast.makeText(getActivity(), "Invalid location", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+//        if(productList == null) return;
+//        Collections.sort(productList, new Comparator<Product>(){
+//            @Override
+//            public int compare(Product o1, Product o2) {
+//                Location loc1 = new Location("Loc1");
+//                loc1.setLatitude(o1.getLat());
+//                loc1.setLongitude(o1.getLng());
+//
+//                Location loc2 = new Location("Loc2");
+//                loc2.setLatitude(o1.getLat());
+//                loc2.setLongitude(o1.getLng());
+//
+//                double dist1 = loc1.distanceTo(currentLocation);
+//                double dist2 = loc2.distanceTo(currentLocation);
+//                return Double.valueOf(dist2).compareTo(dist1);
+//            }
+//        });
+//        mAdapter.notifyDataSetChanged();
     }
 
 }

@@ -59,7 +59,7 @@ public class ProductDetailsFragment extends Fragment {
     TextView mProductName, mPrice, mSeller, mQuantity, mStatus, mLocation, mDescription, mErrorView;
     EditText mEditProductName, mEditLocation, mEditPrice, mEditQuantity, mEditUnit, mEditDescription, mEditStatus;
     ImageView mImage;
-    Button mMakeOffer, mDelete, mEdit, mSave;
+    Button mMakeOffer, mDelete, mEdit, mSave, mOrder;
     ProgressDialog pDialog;
 
     User user;
@@ -101,6 +101,8 @@ public class ProductDetailsFragment extends Fragment {
         mDelete = mView.findViewById(R.id.btnDeleteProduct);
         mEdit = mView.findViewById(R.id.btnEditProduct);
         mSave = mView.findViewById(R.id.btnSaveProduct);
+        mOrder = mView.findViewById(R.id.btnOrder);
+
         mMakeOffer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -125,10 +127,19 @@ public class ProductDetailsFragment extends Fragment {
                 saveProduct();
             }
         });
+        mOrder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Utils.setPosition(position);
+                Utils.switchContent(getActivity(), R.id.fragContainer, Tags.PAYMENT_FRAGMENT);
+            }
+        });
         mSeller.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getActivity(), "Clicked", Toast.LENGTH_LONG).show();
+                Utils.setSupplierId(product.getUser().getUserId());
+                Utils.setIsSupplier(true);
+                Utils.switchContent(getActivity(), R.id.fragContainer, Tags.MY_PRODUCTS_FRAGMENT);
             }
         });
 
@@ -176,6 +187,7 @@ public class ProductDetailsFragment extends Fragment {
             mMakeOffer.setVisibility(View.GONE);
             mFormButtons.setVisibility(View.VISIBLE);
             mEdit.setVisibility(View.VISIBLE);
+            mOrder.setVisibility(View.GONE);
         } else {
             mMakeOffer.setVisibility(View.VISIBLE);
             mFormButtons.setVisibility(View.GONE);
@@ -264,8 +276,8 @@ public class ProductDetailsFragment extends Fragment {
                         throw new Exception(response.errorBody().string());
                     if (response.body().getError())
                         throw new Exception(response.body().getMessage());
-//                    Utils.switchContent(getActivity(), R.id.fragContainer, Tags.HOME_FRAGMENT);
                     Toast.makeText(getActivity(), response.body().getMessage(), Toast.LENGTH_LONG).show();
+                    Utils.switchContent(getActivity(), R.id.fragContainer, Tags.HOME_FRAGMENT);
                 } catch (Exception ex) {
                     ApiHelper.handleError(ex.getMessage(), mErrorView, pDialog);
                 }
@@ -352,7 +364,7 @@ public class ProductDetailsFragment extends Fragment {
         );
         newProduct.setProductId(product.getProductId());
 
-        if (!Utils.isEmptyFields(product.getProductName(), product.getDescription(), mEditQuantity.getText().toString(), mEditUnit.getText().toString(), mEditPrice.getText().toString(), mEditLocation.getText().toString())) {
+        if (Utils.isEmptyFields(product.getProductName(), product.getDescription(), mEditQuantity.getText().toString(), mEditUnit.getText().toString(), mEditPrice.getText().toString(), mEditLocation.getText().toString())) {
             mErrorView.setText(R.string.error_sell_product);
             mErrorView.setVisibility(View.VISIBLE);
             return false;

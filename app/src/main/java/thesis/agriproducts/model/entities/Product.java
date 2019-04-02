@@ -2,6 +2,8 @@ package thesis.agriproducts.model.entities;
 
 import com.google.gson.annotations.Expose;
 
+import java.util.Comparator;
+
 public class Product {
 
 

@@ -37,13 +37,14 @@ public class MyProductsFragment extends Fragment {
 
     //region Attributes
     View mView;
-    TextView mErrorView;
+    TextView mErrorView, mSupplierName;
     RecyclerView mRecyclerView;
     ProductAdapter mAdapter;
     ProgressBar mProgress;
     SwipeRefreshLayout mSwipeRefreshLayout;
     List<Product> productList;
-    int userId;
+    int userId, supplierId = 0;
+    boolean isSupplier = false;
     //endregion
 
     @Override
@@ -51,6 +52,7 @@ public class MyProductsFragment extends Fragment {
         mView = inflater.inflate(R.layout.fragment_my_products, container, false);
         mProgress = mView.findViewById(R.id.progMyProducts);
         mErrorView = mView.findViewById(R.id.txtMyProductsError);
+        mSupplierName = mView.findViewById(R.id.txtTitleMyProducts);
         mSwipeRefreshLayout = mView.findViewById(R.id.swipViewMyProducts);
         mRecyclerView = mView.findViewById(R.id.recyclerViewMyProducts);
         mRecyclerView.setHasFixedSize(true);
@@ -64,6 +66,14 @@ public class MyProductsFragment extends Fragment {
         userId = SharedPrefManager.getInstance().getUser(getActivity()).getUserId();
         fetchProducts();
         return mView;
+    }
+
+    public void setSupplierId(int supplierId) {
+        this.supplierId = supplierId;
+    }
+
+    public void setIsSupplier(boolean isSupplier) {
+        this.isSupplier = isSupplier;
     }
 
     private void clearViews() {
@@ -100,10 +110,24 @@ public class MyProductsFragment extends Fragment {
 
     private void showProducts() {
         int userId = SharedPrefManager.getInstance().getUser(getActivity()).getUserId();
+
+        //Set Supplier name
+        if(isSupplier) {
+            mSupplierName.setText(productList.get(0).getUser().getName());
+            mSupplierName.setVisibility(View.VISIBLE);
+        }
+
+        //Show Products
         for (Iterator<Product> iterator = productList.iterator(); iterator.hasNext();) {
             Product product = iterator.next();
-            if (product.getUser().getUserId() != userId) iterator.remove();
+            if(isSupplier) {
+                if(product.getUser().getUserId() != supplierId) iterator.remove();
+            }
+            else {
+                if (product.getUser().getUserId() != userId) iterator.remove();
+            }
         }
+
         CenterRepository.getCenterRepository().setListOfProducts(productList);
         if(productList.size() < 1) {
             mErrorView.setText("No product(s) found");

@@ -3,26 +3,22 @@ package thesis.agriproducts.util;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.CursorLoader;
-import android.text.InputType;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.text.TextUtils;
-import android.widget.EditText;
-import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import thesis.agriproducts.AppController;
 import thesis.agriproducts.view.fragment.AccountAdminFragment;
@@ -32,7 +28,11 @@ import thesis.agriproducts.view.fragment.HomeFragment;
 import thesis.agriproducts.view.fragment.InboxFragment;
 import thesis.agriproducts.view.fragment.MessagesFragment;
 import thesis.agriproducts.view.fragment.MyProductsFragment;
+import thesis.agriproducts.view.fragment.OrderDetailsFragment;
+import thesis.agriproducts.view.fragment.OrdersFragment;
+import thesis.agriproducts.view.fragment.PaymentFragment;
 import thesis.agriproducts.view.fragment.ProductDetailsFragment;
+import thesis.agriproducts.view.fragment.ProfileFragment;
 import thesis.agriproducts.view.fragment.SellFragment;
 import thesis.agriproducts.view.fragment.UserDetailsFragment;
 
@@ -100,9 +100,9 @@ public class Utils {
     //region Authentication
     public static  boolean isEmptyFields(String... fields) {
         for(String f : fields) {
-            if(f.isEmpty()) return false;
+            if(f.isEmpty()) return true;
         }
-        return true;
+        return false;
     }
 
     public static  boolean isEmailValid(String email) {
@@ -116,6 +116,10 @@ public class Utils {
 
     public static  boolean isPasswordGreaterThanEight(String password) {
         return (password.length() > 8);
+    }
+
+    public static int parseWithDefault(String s) {
+        return s.matches("-?\\d+") ? Integer.parseInt(s) : 0;
     }
     //endregion
 
@@ -139,6 +143,9 @@ public class Utils {
 
     //region Fragment Util
     private static int position = 0;
+    private static int supplierId = 0;
+    private static boolean isSupplier = false;
+    private static boolean buying = true;
     private static String CURRENT_TAG = null;
 
     public static void switchContent(FragmentActivity baseActivity, int id, String TAG) {
@@ -159,6 +166,8 @@ public class Utils {
                     break;
                 case Tags.MY_PRODUCTS_FRAGMENT:
                     fragment = new MyProductsFragment();
+                    ((MyProductsFragment) fragment).setSupplierId(supplierId);
+                    ((MyProductsFragment) fragment).setIsSupplier(isSupplier);
                     break;
                 case Tags.ACCOUNT_FRAGMENT:
                     fragment = new AccountFragment();
@@ -185,6 +194,21 @@ public class Utils {
                 case Tags.ACCOUNT_ADMIN_FRAGMENT:
                     fragment = new AccountAdminFragment();
                     break;
+                case Tags.PAYMENT_FRAGMENT:
+                    fragment = new PaymentFragment();
+                    ((PaymentFragment) fragment).setPosition(position);
+                    break;
+                case Tags.ORDERS_FRAGMENT:
+                    fragment = new OrdersFragment();
+                    break;
+                case Tags.PROFILE_FRAGMENT:
+                    fragment = new ProfileFragment();
+                    break;
+                case Tags.ORDER_DETAILS_FRAGMENT:
+                    fragment = new OrderDetailsFragment();
+                    ((OrderDetailsFragment) fragment).setPosition(position);
+                    ((OrderDetailsFragment) fragment).setBuying(buying);
+                    break;
                 default:
                     fragment = null;
                     break;
@@ -192,13 +216,44 @@ public class Utils {
 
             CURRENT_TAG = TAG;
             transaction.replace(id, fragment, TAG);
+            transaction.addToBackStack(TAG);
             transaction.commit();
+            fragmentManager.executePendingTransactions();
         }
     }
 
     public static void setPosition(int position) {
         Utils.position = position;
     }
+
+    public static void setSupplierId(int supplierId) {
+        Utils.supplierId = supplierId;
+    }
+
+    public static void setIsSupplier(boolean isSupplier) {
+        Utils.isSupplier = isSupplier;
+    }
+
+    public static void setBuying(boolean buying) {
+        Utils.buying = buying;
+    }
+
+    //endregion
+
+    //region Api Util
+
+    public static void handleError(String error, TextView mErrorView, ProgressDialog pDialog) {
+        Utils.dismissProgressDialog(pDialog);
+        mErrorView.setText(error);
+        mErrorView.setVisibility(View.VISIBLE);
+    }
+
+    public static void handleError(String error, TextView mErrorView, ProgressBar mProgress, RecyclerView mRecyclerView) {
+        Utils.showProgress(false, mProgress, mRecyclerView);
+        mErrorView.setText(error);
+        mErrorView.setVisibility(View.VISIBLE);
+    }
+
     //endregion
 
 }

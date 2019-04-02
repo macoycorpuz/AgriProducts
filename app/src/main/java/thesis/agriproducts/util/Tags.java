@@ -10,6 +10,10 @@ public interface Tags {
     String ACCOUNT_FRAGMENT = "AccountFragment";
     String PRODUCT_DETAILS_FRAGMENT = "ProductDetailsFragment";
     String USER_DETAILS_FRAGMENT = "UserDetailsFragment";
+    String PAYMENT_FRAGMENT = "PaymentFragment";
+    String ORDERS_FRAGMENT = "OrdersFragment";
+    String PROFILE_FRAGMENT = "ProfileFragment";
+    String ORDER_DETAILS_FRAGMENT = "OrderDetailsFragment";
 
     String USERS_FRAGMENT = "Users";
     String PRODUCTS_FRAGMENT = "Products";
@@ -28,4 +32,13 @@ public interface Tags {
 
     int BUYING_FLAG = 1;
     int SELLING_FLAG = 2;
+
+    int CASH = 1;
+    int CREDIT = 2;
+
+
+    String DELIVERED = "Delivered";
+    String PROCESSING = "Processing Order";
+    String CANCEL = "Cancel";
+
 }

@@ -1,5 +1,7 @@
 package thesis.agriproducts.view.fragment;
 
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -7,17 +9,32 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import retrofit2.Call;
@@ -38,14 +55,22 @@ import thesis.agriproducts.view.adapter.ProductAdapter;
 public class HomeFragment extends Fragment{
 
     //region Attributes
+    String TAG = "Home Fragment";
+
     View mView;
+    Spinner mFilter;
     EditText mSearchProduct;
     TextView mErrorView;
     RecyclerView mRecyclerView;
     ProductAdapter mAdapter;
     ProgressBar mProgress;
     SwipeRefreshLayout mSwipeRefreshLayout;
+
     List<Product> productList;
+    String[] items = new String[]{"Filter Products", "Price: Low to High", "Price: High to Low", "Nearest"};
+    Location currentLocation;
+
+    FusedLocationProviderClient fusedLocationProviderClient;
     //endregion
 
     @Override
@@ -54,6 +79,7 @@ public class HomeFragment extends Fragment{
         mProgress = mView.findViewById(R.id.progProducts);
         mErrorView = mView.findViewById(R.id.txtHomeError);
         mSearchProduct = mView.findViewById(R.id.txtSearchProducts);
+        mFilter = mView.findViewById(R.id.txtFilter);
         mSwipeRefreshLayout = mView.findViewById(R.id.swipeView);
         mRecyclerView = mView.findViewById(R.id.recyclerView);
         mRecyclerView.setHasFixedSize(true);
@@ -61,12 +87,28 @@ public class HomeFragment extends Fragment{
         mSearchProduct.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if((event.getAction() == KeyEvent.ACTION_DOWN && keyCode ==KeyEvent.KEYCODE_ENTER))
-                {
+                if((event.getAction() == KeyEvent.ACTION_DOWN && keyCode ==KeyEvent.KEYCODE_ENTER)) {
                     searchProducts(mSearchProduct.getText().toString());
                     return true;
                 }
                 return false;
+            }
+        });
+        mFilter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                if(position == 1) sortPrice(true);
+                else if(position == 2) sortPrice(false);
+                else if(position == 3) sortNearest();
+                else{
+                    Toast.makeText(getActivity(), "Select Filter", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
             }
         });
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -75,7 +117,11 @@ public class HomeFragment extends Fragment{
                 fetchProducts();
             }
         });
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_dropdown_item, items);
+        mFilter.setAdapter(adapter);
         fetchProducts();
+
         return mView;
     }
 
@@ -139,4 +185,44 @@ public class HomeFragment extends Fragment{
         CenterRepository.getCenterRepository().setListOfProducts(productList);
         mAdapter.notifyDataSetChanged();
     }
+
+    private void sortPrice(final boolean isCheapest) {
+        Log.d(TAG, "sortCheapest: Sort Cheapest");
+        if(productList == null) return;
+        Collections.sort(productList, new Comparator<Product>(){
+            @Override
+            public int compare(Product o1, Product o2) {
+                if(isCheapest) return Double.valueOf(o1.getPrice()).compareTo(o2.getPrice());
+                else return Double.valueOf(o2.getPrice()).compareTo(o1.getPrice());
+            }
+        });
+        mAdapter.notifyDataSetChanged();
+    }
+
+    private void sortNearest() {
+        Log.d(TAG, "sortCheapest: Sort Nearest");
+        if(productList == null) return;
+        if(currentLocation == null) {
+            Toast.makeText(getActivity(), "Invalid location. Turn on GPS.", Toast.LENGTH_LONG).show();
+            return;
+        }
+        Collections.sort(productList, new Comparator<Product>(){
+            @Override
+            public int compare(Product o1, Product o2) {
+                Location loc1 = new Location("Loc1");
+                loc1.setLatitude(o1.getLat());
+                loc1.setLongitude(o1.getLng());
+
+                Location loc2 = new Location("Loc2");
+                loc2.setLatitude(o1.getLat());
+                loc2.setLongitude(o1.getLng());
+
+                double dist1 = loc1.distanceTo(currentLocation);
+                double dist2 = loc2.distanceTo(currentLocation);
+                return Double.valueOf(dist2).compareTo(dist1);
+            }
+        });
+        mAdapter.notifyDataSetChanged();
+    }
+
 }

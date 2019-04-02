@@ -15,6 +15,8 @@ public class Result {
     @Expose
     private Product product;
     @Expose
+    private Order order;
+    @Expose
     private List<User> users;
     @Expose
     private List<Product> products;
@@ -22,6 +24,8 @@ public class Result {
     private List<Deal> deals;
     @Expose
     private List<Message> messages;
+    @Expose
+    private List<Order> orders;
 
     public Result() {
     }
@@ -42,6 +46,10 @@ public class Result {
         return product;
     }
 
+    public Order getOrder() {
+        return order;
+    }
+
     public List<User> getUsers() {
         return users;
     }
@@ -56,5 +64,9 @@ public class Result {
 
     public List<Message> getMessages() {
         return messages;
+    }
+
+    public List<Order> getOrders() {
+        return orders;
     }
 }

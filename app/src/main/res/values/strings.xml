@@ -6,6 +6,8 @@
     <string name="title_sell">Sell</string>
     <string name="title_inbox">Inbox</string>
     <string name="title_account">Account</string>
+    <string name="title_orders">Orders</string>
+    <string name="title_profile">Profile</string>
     <string name="title_my_products">My Products</string>
     <string name="title_users">Users</string>
     <string name="title_products">Products</string>
@@ -18,6 +20,8 @@
     <string name="title_fragment_inbox">Inbox</string>
     <string name="title_fragment_my_products">My Products</string>
     <string name="title_fragment_account">Account</string>
+    <string name="title_fragment_payment">Order Details</string>
+    <string name="title_fragment_credit_card">Credit Card</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
@@ -44,6 +48,7 @@
     <string name="error_confirm_password">Password doesn\'t match</string>
 
     <!-- Strings related to products -->
+    <string name="prompt_filter">Filter</string>
     <string name="prompt_product_search">Search</string>
     <string name="prompt_product_name">Product Name</string>
     <string name="prompt_description">Description</string>
@@ -54,11 +59,40 @@
     <string name="prompt_seller">Seller</string>
     <string name="prompt_status">Status</string>
     <string name="prompt_product_image">Product Image</string>
+
     <string name="action_save">Save</string>
     <string name="action_edit">Edit</string>
     <string name="action_message">Message</string>
-    <string name="action_make_an_offer">Make an Offer</string>
+    <string name="action_make_an_offer">Message</string>
+    <string name="action_order">Order</string>
     <string name="action_delete">Delete</string>
+
+    <!-- Strings related to payment -->
+    <string name="total">Total</string>
+    <string name="paymentMethod">Payment Method</string>
+    <string name="change">Change</string>
+    <string name="action_payment">Place Order </string>
+    <string name="error_quantity">Invalid Quantity</string>
+    <string name="error_payment_method">Invalid Payment Method</string>
+    <string name="error_change">Invalid Change</string>
+    <string name="error_credit">Invalid Credit</string>
+    <string name="error_users">No user(s) found</string>
+
+    <!-- region Credit Card Strings -->
+    <string name="cardNumber">Card Number</string>
+    <string name="expiryDate">Expiry Date</string>
+    <string name="csv">CSV</string>
+    <!-- endregion -->
+
+    <!-- region Order Strings -->
+    <string name="buyer">Buyer</string>
+    <string name="supplier">Supplier</string>
+    <string name="product">Product</string>
+    <string name="status">Status</string>
+    <string name="action_order_cancel">Cancel</string>
+    <string name="action_order_processing">Processing</string>
+    <string name="action_order_delivered">Delivered</string>
+    <!-- endregion -->
 
     <!-- String related to selling -->
     <string name="action_product_sell">Sell Product</string>

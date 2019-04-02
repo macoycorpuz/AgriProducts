@@ -7,9 +7,9 @@
         android:title="@string/title_home"/>
 
     <item
-        android:id="@+id/navigation_sell"
-        android:icon="@drawable/ic_add_shopping_cart_black_24dp"
-        android:title="@string/title_sell" />
+        android:id="@+id/navigation_orders"
+        android:icon="@drawable/ic_shopping_basket_black_24dp"
+        android:title="@string/title_orders"/>
 
     <item
         android:id="@+id/navigation_inbox"
@@ -18,12 +18,12 @@
 
 
     <item
-        android:id="@+id/navigation_my_products"
-        android:icon="@drawable/ic_shopping_basket_black_24dp"
-        android:title="@string/title_my_products"/>
+        android:id="@+id/navigation_sell"
+        android:icon="@drawable/ic_add_circle_outline_black_24dp"
+        android:title="@string/title_sell" />
 
     <item
-        android:id="@+id/navigation_account"
+        android:id="@+id/navigation_profile"
         android:icon="@drawable/ic_account_circle_black_24dp"
-        android:title="@string/title_account" />
+        android:title="@string/title_profile" />
 </menu>

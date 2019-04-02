@@ -40,6 +40,7 @@ import thesis.agriproducts.domain.ApiHelper;
 import thesis.agriproducts.model.entities.Product;
 import thesis.agriproducts.model.entities.Result;
 import thesis.agriproducts.util.SharedPrefManager;
+import thesis.agriproducts.util.Tags;
 import thesis.agriproducts.util.Utils;
 import thesis.agriproducts.view.activity.SignUpActivity;
 
@@ -87,7 +88,7 @@ public class SellFragment extends Fragment {
         });
         mLocation.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
-            public void onFocusChange(View v, boolean hasFocus) { openDestination(); }
+            public void onFocusChange(View v, boolean hasFocus) { if(hasFocus) openDestination(); }
         });
         mProductImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -161,7 +162,7 @@ public class SellFragment extends Fragment {
 
         );
 
-        if (!Utils.isEmptyFields(product.getProductName(), product.getDescription(), mQuantity.getText().toString(), mUnit.getText().toString(), mPrice.getText().toString(), mLocation.getText().toString())) {
+        if (Utils.isEmptyFields(product.getProductName(), product.getDescription(), mQuantity.getText().toString(), mUnit.getText().toString(), mPrice.getText().toString(), mLocation.getText().toString())) {
             mErrorView.setText(R.string.error_sell_product);
             mErrorView.setVisibility(View.VISIBLE);
         } else if (fileUri == null) {
@@ -186,6 +187,7 @@ public class SellFragment extends Fragment {
                     if (response.body().getError())
                         throw new Exception(response.body().getMessage());
                     Toast.makeText(getActivity(), response.body().getMessage(), Toast.LENGTH_LONG).show();
+                    Utils.switchContent(getActivity(), R.id.fragContainer, Tags.MY_PRODUCTS_FRAGMENT);
                 } catch (Exception ex) {
                     ApiHelper.handleError(ex.getMessage(), mErrorView, pDialog);
                 }

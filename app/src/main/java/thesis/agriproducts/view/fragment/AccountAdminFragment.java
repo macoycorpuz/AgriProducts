@@ -146,7 +146,7 @@ public class AccountAdminFragment extends Fragment {
     }
 
     private void changePassword(String oldP, String newP) {
-        if (!Utils.isEmptyFields(oldP, newP)) {
+        if (Utils.isEmptyFields(oldP, newP)) {
             Toast.makeText(getActivity(), "Invalid Fields", Toast.LENGTH_LONG).show();
         } else if (!Utils.isPasswordValid(oldP)) {
             Toast.makeText(getActivity(), "Invalid Old Password", Toast.LENGTH_LONG).show();
@@ -177,7 +177,7 @@ public class AccountAdminFragment extends Fragment {
     }
 
     private void addAdmin(String name, String email, String password) {
-        if (!Utils.isEmptyFields(name, email, password)) {
+        if (Utils.isEmptyFields(name, email, password)) {
             Toast.makeText(getActivity(), "Invalid Fields", Toast.LENGTH_LONG).show();
         } else if (!Utils.isPasswordValid(password)) {
             Toast.makeText(getActivity(), "Invalid Password. (More than 8 characters)", Toast.LENGTH_LONG).show();

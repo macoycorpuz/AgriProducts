@@ -99,7 +99,7 @@ public class LoginActivity extends AppCompatActivity{
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
 
-        if (!Utils.isEmptyFields(email, password)) {
+        if (Utils.isEmptyFields(email, password)) {
             mErrorView.setText(R.string.error_login);
             mErrorView.setVisibility(View.VISIBLE);
         } else {

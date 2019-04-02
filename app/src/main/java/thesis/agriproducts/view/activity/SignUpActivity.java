@@ -126,7 +126,7 @@ public class SignUpActivity extends AppCompatActivity {
                 mAddressView.getText().toString()
         );
 
-        if (!Utils.isEmptyFields(user.getName(), user.getEmail(), user.getPassword(), mConfirmPasswordView.getText().toString(), user.getNumber(), user.getAddress())) {
+        if (Utils.isEmptyFields(user.getName(), user.getEmail(), user.getPassword(), mConfirmPasswordView.getText().toString(), user.getNumber(), user.getAddress())) {
             mErrorView.setText(R.string.error_sign_up);
             mErrorView.setVisibility(View.VISIBLE);
         } else if (fileUri == null) {

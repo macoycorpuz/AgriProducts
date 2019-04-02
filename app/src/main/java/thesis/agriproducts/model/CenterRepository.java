@@ -18,6 +18,7 @@ public class CenterRepository {
     private List<User> listOfUsers = Collections.synchronizedList(new ArrayList<User>());
     private List<Deal> listOfDeals = Collections.synchronizedList(new ArrayList<Deal>());
     private List<Message> listOfMessages = Collections.synchronizedList(new ArrayList<Message>());
+    private List<Order> listOfOrders = Collections.synchronizedList(new ArrayList<Order>());
 
     public static CenterRepository getCenterRepository() {
 
@@ -57,5 +58,17 @@ public class CenterRepository {
 
     public void setListOfDeals(List<Deal> listOfDeals) {
         this.listOfDeals = listOfDeals;
+    }
+
+    public static void setCenterRepository(CenterRepository centerRepository) {
+        CenterRepository.centerRepository = centerRepository;
+    }
+
+    public List<Order> getListOfOrders() {
+        return listOfOrders;
+    }
+
+    public void setListOfOrders(List<Order> listOfOrders) {
+        this.listOfOrders = listOfOrders;
     }
 }

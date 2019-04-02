@@ -112,4 +112,35 @@ public interface Services {
     @GET("messages/{dealId}")
     Call<Result> getMessages(@Path("dealId") int dealId);
     //endregion
+
+    //region Orders
+    @FormUrlEncoded
+    @POST("orders")
+    Call<Result> setOrder(
+            @Field("order_quantity") int quantity,
+            @Field("order_status") String status,
+            @Field("active") boolean active,
+            @Field("total") double total,
+            @Field("cash") double cash,
+            @Field("productId") int product_id,
+            @Field("buyerId") int user_id,
+            @Field("credit_number") String number,
+            @Field("expiry") String expiry,
+            @Field("csv") int csv);
+
+    @GET("orders/userId/{userId}/buying/{buying}")
+    Call<Result> getOrders(
+            @Path("userId") int user_id,
+            @Path("buying") boolean buying);
+
+    @FormUrlEncoded
+    @POST("orders/update")
+    Call<Result> updateOrderStatus(
+            @Field("orderId") int id,
+            @Field("order_status") String status,
+            @Field("active") boolean active);
+
+    @GET("orders/delete/{orderId}")
+    Call<Result> deleteOrder(@Path("orderId") int id);
+    //endregion
 }

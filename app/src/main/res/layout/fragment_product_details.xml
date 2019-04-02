@@ -222,7 +222,7 @@
                             android:layout_height="wrap_content"
                             android:hint="@string/prompt_quantity"
                             android:imeActionId="6"
-                            android:inputType="number"/>
+                        android:inputType="number"/>
 
                     </android.support.design.widget.TextInputLayout>
 
@@ -270,7 +270,7 @@
             </LinearLayout>
 
         </LinearLayout>
-        
+
     </ScrollView>
 
     <LinearLayout
@@ -307,13 +307,28 @@
             android:visibility="gone"/>
     </LinearLayout>
 
-    <Button
-        android:id="@+id/btnMakeOffer"
+    <LinearLayout
+        android:id="@+id/formProductOrder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight=".20"
         android:layout_gravity="center_vertical|center_horizontal"
-        android:textStyle="bold"
-        android:text="@string/action_make_an_offer"/>
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/btnMakeOffer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textStyle="bold"
+            android:text="@string/action_make_an_offer"/>
+        <Button
+            android:id="@+id/btnOrder"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textStyle="bold"
+            android:text="@string/action_order"/>
+    </LinearLayout>
+
 
 </LinearLayout>

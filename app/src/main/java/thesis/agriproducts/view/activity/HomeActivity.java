@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.WindowManager;
 import thesis.agriproducts.R;
@@ -11,6 +12,8 @@ import thesis.agriproducts.util.Tags;
 import thesis.agriproducts.util.Utils;
 
 public class HomeActivity extends AppCompatActivity {
+
+    String TAG = "Home Activity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,11 +28,13 @@ public class HomeActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        int count = getFragmentManager().getBackStackEntryCount();
+//        moveTaskToBack(false);
+        int count = getSupportFragmentManager().getBackStackEntryCount();
+        Log.d(TAG, "onBackPressed: " + count);
         if (count == 0) {
             super.onBackPressed();
         } else {
-            getFragmentManager().popBackStack();
+            getSupportFragmentManager().popBackStack();
         }
     }
 
@@ -49,11 +54,11 @@ public class HomeActivity extends AppCompatActivity {
                 case R.id.navigation_inbox:
                     Utils.switchContent(HomeActivity.this, R.id.fragContainer, Tags.INBOX_FRAGMENT);
                     return true;
-                case R.id.navigation_my_products:
-                    Utils.switchContent(HomeActivity.this, R.id.fragContainer, Tags.MY_PRODUCTS_FRAGMENT);
+                case R.id.navigation_orders:
+                    Utils.switchContent(HomeActivity.this, R.id.fragContainer, Tags.ORDERS_FRAGMENT);
                     return true;
-                case R.id.navigation_account:
-                    Utils.switchContent(HomeActivity.this, R.id.fragContainer, Tags.ACCOUNT_FRAGMENT);
+                case R.id.navigation_profile:
+                    Utils.switchContent(HomeActivity.this, R.id.fragContainer, Tags.PROFILE_FRAGMENT);
                     return true;
             }
             return false;

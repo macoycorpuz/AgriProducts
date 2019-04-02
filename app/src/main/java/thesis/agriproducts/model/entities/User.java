@@ -2,7 +2,7 @@ package thesis.agriproducts.model.entities;
 
 import com.google.gson.annotations.Expose;
 
-public class User {
+public class  User {
 
     @Expose
     private int userId;

@@ -55,53 +55,56 @@
                     android:textColor="@android:color/background_dark"
                     android:text="@string/prompt_product_name"/>
 
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/product_horizontal_margin"
-                    android:layout_marginEnd="@dimen/product_horizontal_margin"
-                    android:layout_marginBottom="@dimen/product_vertical_margin"
-                    android:layout_gravity="center"
-                    android:gravity="center">
-
-                    <TextView
-                        android:id="@+id/txtProdPrice"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_toStartOf="@+id/txtProdQuantity"
-                        android:textColor="@android:color/background_dark"
-                        android:textSize="20sp"
-                        android:textStyle="bold"
-                        android:text="@string/prompt_price"/>
-
-                    <TextView
-                        android:id="@+id/txtProdQuantity"
-                        android:layout_width="60dp"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:textSize="12sp"
-                        android:textColor="@android:color/background_dark"
-                        android:text="@string/prompt_quantity"/>
-
-                </RelativeLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@android:color/darker_gray"/>
-
                 <TextView
-                    android:id="@+id/txtProdStatus"
+                    android:id="@+id/txtProdPrice"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/product_horizontal_margin"
                     android:layout_marginEnd="@dimen/product_horizontal_margin"
                     android:layout_marginTop="@dimen/product_vertical_margin"
                     android:layout_marginBottom="@dimen/product_vertical_margin"
-                    android:textColor="@android:color/holo_green_light"
-                    android:textSize="14sp"
-                    android:text="@string/prompt_status"/>
+                    android:textColor="@android:color/background_dark"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:text="@string/prompt_price"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@android:color/darker_gray"/>
+
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/product_horizontal_margin"
+                    android:layout_marginEnd="@dimen/product_horizontal_margin"
+                    android:layout_marginBottom="@dimen/product_vertical_margin"
+                    android:layout_marginTop="@dimen/product_vertical_margin"
+                    android:layout_gravity="center"
+                    android:gravity="center">
+
+
+                    <TextView
+                        android:id="@+id/txtProdStatus"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_toStartOf="@+id/txtProdQuantity"
+                        android:textColor="@android:color/holo_green_light"
+                        android:textSize="14sp"
+                        android:text="@string/prompt_status"/>
+
+                    <TextView
+                        android:id="@+id/txtProdQuantity"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:textSize="14sp"
+                        android:textColor="@android:color/background_dark"
+                        android:text="@string/prompt_quantity"/>
+
+                </RelativeLayout>
 
                 <View
                     android:layout_width="match_parent"

@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -110,6 +112,21 @@ public class PaymentFragment extends Fragment {
                 return false;
             }
         });
+        mQuantity.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(!mQuantity.getText().toString().trim().equals("")) {
+                    double total = Double.valueOf(s.toString()) * product.getPrice();
+                    mTotal.setText(String.valueOf(total));
+                }
+            }
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
 
         return mView;
     }
@@ -118,30 +135,7 @@ public class PaymentFragment extends Fragment {
         this.position = position;
     }
 
-    private void showProduct() {
-        product = CenterRepository.getCenterRepository().getListOfProducts().get(position);
-        mProductName.setText(product.getProductName());
-        mSupplierName.setText(product.getUser().getName());
-        mLocation.setText(product.getLocation());
-        mPrice.setText(String.valueOf(product.getPrice()));
-        Picasso.get()
-                .load(product.getProductUrl())
-                .placeholder(R.drawable.ic_photo_light_blue_24dp)
-                .error(R.drawable.ic_error_outline_red_24dp)
-                .into(mImage);
 
-        mQuantity.setText("1");
-        paymentId = Tags.CASH;
-        mViewCredit.setVisibility(View.GONE);
-        mChange.setVisibility(View.VISIBLE);
-        mPaymentMethod.setText(paymentMethod[0]);
-        double total = Double.valueOf(mQuantity.getText().toString()) * product.getPrice();
-        mTotal.setText(String.valueOf(total));
-        mChange.setText(String.valueOf(total));
-        mCardNumber.setText("0");
-        mExpiryDate.setText("0");
-        mCsv.setText("0");
-    }
 
     private void selectPaymentMethod() {
         AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
@@ -248,6 +242,33 @@ public class PaymentFragment extends Fragment {
         });
     }
 
+    private void showProduct() {
+        product = CenterRepository.getCenterRepository().getListOfProducts().get(position);
+        mProductName.setText(product.getProductName());
+        mSupplierName.setText(product.getUser().getName());
+        mLocation.setText(product.getLocation());
+        mPrice.setText(String.valueOf(product.getPrice()));
+        Picasso.get()
+                .load(product.getProductUrl())
+                .placeholder(R.drawable.ic_photo_light_blue_24dp)
+                .error(R.drawable.ic_error_outline_red_24dp)
+                .into(mImage);
 
+        mQuantity.setText("1");
+        paymentId = Tags.CASH;
+        mViewCredit.setVisibility(View.GONE);
+        mChange.setVisibility(View.VISIBLE);
+        mPaymentMethod.setText(paymentMethod[0]);
+
+
+
+        double total = Double.valueOf(mQuantity.getText().toString()) * product.getPrice();
+
+        mTotal.setText(String.valueOf(total));
+        mChange.setText(String.valueOf(total));
+        mCardNumber.setText("0");
+        mExpiryDate.setText("0");
+        mCsv.setText("0");
+    }
 
 }

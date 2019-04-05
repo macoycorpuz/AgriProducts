@@ -201,7 +201,7 @@ public class ProductDetailsFragment extends Fragment {
             mEdit.setVisibility(View.VISIBLE);
             mSave.setVisibility(View.GONE);
         }
-        String price = "PHP " + String.valueOf(product.getPrice());
+        String price = "PHP " + String.valueOf(product.getPrice()) + " per Unit";
         String quantity = String.valueOf(product.getQuantity() + product.getUnit());
         mProductName.setText(product.getProductName());
         mPrice.setText(price);

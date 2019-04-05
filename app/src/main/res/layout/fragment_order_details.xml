@@ -59,6 +59,24 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
+            <TextView
+                android:id="@+id/txtOrderQuantity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Quantity: "
+                android:textSize="@dimen/edit_text_font_size"
+                android:textStyle="bold"
+                android:textColor="@color/colorBlack"/>
+
+            <TextView
+                android:id="@+id/txtOrderChange"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Change: "
+                android:textSize="@dimen/edit_text_font_size"
+                android:textStyle="bold"
+                android:textColor="@color/colorBlack"/>
+
         </LinearLayout>
 
     </ScrollView>

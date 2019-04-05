@@ -40,7 +40,7 @@ public class OrderDetailsFragment extends Fragment {
 
     View mView, mViewProduct, mViewUser, mViewButtons;
     ImageView mImage, mImageUser;
-    TextView mProdName, mSupplierName, mLocation, mPrice;
+    TextView mProdName, mSupplierName, mLocation, mPrice, mQuantity, mChange;
     TextView mName, mEmail, mAddress;
     TextView mUser, mStatus;
     Button mProcessing, mDelivered, mCancel;
@@ -70,6 +70,8 @@ public class OrderDetailsFragment extends Fragment {
 
         mStatus = mView.findViewById(R.id.txtOrderStatus);
         mUser = mView.findViewById(R.id.txtOrderUser);
+        mQuantity = mView.findViewById(R.id.txtOrderQuantity);
+        mChange = mView.findViewById(R.id.txtOrderChange);
         mProcessing = mView.findViewById(R.id.btnOrderProcess);
         mDelivered = mView.findViewById(R.id.btnOrderDelivered);
         mCancel = mView.findViewById(R.id.btnOrderCancel);
@@ -154,10 +156,19 @@ public class OrderDetailsFragment extends Fragment {
         mEmail.setText(email);
         mAddress.setText(address);
         Picasso.get()
-                .load(url)
+                .load(order.getProduct().getUser().getUrl())
                 .placeholder(R.drawable.ic_photo_light_blue_24dp)
                 .error(R.drawable.ic_error_outline_red_24dp)
                 .into(mImageUser);
+
+        mQuantity.setText(String.valueOf(order.getQuantity()));
+        if (order.getCash() > 0) {
+            mChange.setVisibility(View.VISIBLE);
+            mChange.setText(String.valueOf(order.getCash()));
+        } else {
+            mChange.setVisibility(View.GONE);
+        }
+
 
         if(order.getStatus().equals(Tags.DELIVERED)) {
             mStatus.setTextColor(Color.parseColor("#00b226"));

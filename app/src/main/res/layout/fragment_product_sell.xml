@@ -82,7 +82,7 @@
                         android:id="@+id/txtSellPrice"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="@string/prompt_price"
+                        android:hint="Price per Unit"
                         android:inputType="numberDecimal"
                         android:imeActionId="6" />
 
